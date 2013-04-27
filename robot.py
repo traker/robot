@@ -26,9 +26,9 @@ class Robot():
     def stop( self ):
         self.running = False
 
-    def add_to_pile( self, exe, var ):
+    def add_to_pile( self, exe, var=() ):
         self.pile.append( exe )
-        self.pilevar( var )
+        self.pilevar.append( var )
 
     def __exec_next__( self ):
         self.pile.popleft()( self.pilevar.popleft() )
