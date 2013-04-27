@@ -10,7 +10,7 @@ import ConfigParser, numpy
 import accelerometer
 import commands
 
-class accel():
+class Accel():
     '''
         renvoi differente information du module accelerometre.
         configuration du module:
