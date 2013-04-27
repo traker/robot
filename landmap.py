@@ -69,7 +69,7 @@ class LandMap():
         @return: renvoi l'Objet Square de la position x,y 
         @rtype: astar.Square
         '''
-        return self.get_square( x, y )
+        return self.land.get( x, y )
 
     def set_wall( self, x, y, bool ):
         '''
