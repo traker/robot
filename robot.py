@@ -10,7 +10,7 @@ class Robot():
         self.config.read( 'RobotConf.cfg' )
         self.board = pyfirmata.ArduinoMega( self.config.get( 'Arduino', 'device' ) )
         self.prop = propulsion.Propulsion( self.config, self.board )
-        self.tourel = propulsion.Propulsion( self.config, self.board )
+        self.tourel = propulsion.Tourelle( self.config, self.board )
         self.vue = Vision( self.config, self.board )
         self.land = landmap.LandMap()
         self.accel = propulsion.Accel( self.config )
@@ -26,7 +26,7 @@ class Robot():
     def stop( self ):
         self.running = False
 
-    def add_to_pile( self, exe, var=() ):
+    def add_to_pile( self, exe, var ):
         self.pile.append( exe )
         self.pilevar( var )
 
