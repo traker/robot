@@ -13,7 +13,7 @@ class Robot():
         self.tourel = propulsion.Propulsion( self.config, self.board )
         self.vue = Vision( self.config, self.board )
         self.land = landmap.LandMap()
-        self.accel = propulsion.Accel()
+        self.accel = propulsion.Accel( self.config )
         self.pile = collections.deque()
         self.pilevar = collections.deque()
         self.running = False
