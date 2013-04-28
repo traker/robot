@@ -36,7 +36,7 @@ class Robot():
         if tmp == None:
             self.pile_resultat.append( self.pile.popleft()() )
         else:
-            self.pile.popleft()( *tmp )
+            self.pile_resultat.append( self.pile.popleft()( *tmp ) )
 
     def coeur( self ):
         while self.running:
@@ -44,5 +44,5 @@ class Robot():
                 time.sleep( 0.1 )
             else:
                 self.__exec_next__()
-                print self.pile_resultat.popleft()
+                #print self.pile_resultat.popleft()
             #thread.start_new_thread(gcode.get(ref[0],nullcomm),(ref[1:],))
