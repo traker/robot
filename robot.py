@@ -39,8 +39,8 @@ class Robot():
 
     def coeur( self ):
         while self.running:
-            if self.pile > 0:
-                self.__exec_next__()
-            else:
+            if self.pile <= 0:
                 time.sleep( 0.1 )
+            else:
+                self.__exec_next__()
             #thread.start_new_thread(gcode.get(ref[0],nullcomm),(ref[1:],))
