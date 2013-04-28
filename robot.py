@@ -39,7 +39,7 @@ class Robot():
 
     def coeur( self ):
         while self.running:
-            if self.pile <= 0:
+            if self.pile.__len__() <= 0:
                 time.sleep( 0.1 )
             else:
                 self.__exec_next__()
