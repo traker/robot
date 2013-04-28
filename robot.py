@@ -16,6 +16,7 @@ class Robot():
         self.accel = propulsion.Accel( self.config )
         self.pile = collections.deque()
         self.pilevar = collections.deque()
+        self.pile_resultat = collections.deque()
         self.running = False
 
 
@@ -33,9 +34,9 @@ class Robot():
     def __exec_next__( self ):
         tmp = self.pilevar.popleft()
         if tmp == None:
-            self.pile.popleft()()
+            self.pile_resultat.append( self.pile.popleft()() )
         else:
-            self.pile.popleft()( tmp )
+            self.pile.popleft()( str( tmp ) )
 
     def coeur( self ):
         while self.running:
@@ -43,4 +44,5 @@ class Robot():
                 time.sleep( 0.1 )
             else:
                 self.__exec_next__()
+                print self.pile_resultat.popleft()
             #thread.start_new_thread(gcode.get(ref[0],nullcomm),(ref[1:],))
