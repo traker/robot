@@ -36,7 +36,7 @@ class Robot():
         if tmp == None:
             self.pile_resultat.append( self.pile.popleft()() )
         else:
-            self.pile.popleft()( tmp )
+            self.pile.popleft()( *tmp )
 
     def coeur( self ):
         while self.running:
