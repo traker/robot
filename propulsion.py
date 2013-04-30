@@ -111,6 +111,8 @@ class Propulsion():
         self.pinMotDroite = config.getint( 'Propulsion', 'pin_moteurdroit' )
         self.motGauche = Moteur( board, self.pinMotGauche )
         self.motDroit = Moteur( board, self.pinMotDroite )
+        self.compteur_droit = 0
+        self.compteur_gauche = 0
         #dictionnaire vitesse = (servoG, servoD)
         self.dic_vitesse = {
                         "0": ( self.neutre - 90, self.neutre + 90 ),
@@ -136,8 +138,16 @@ class Propulsion():
             time.sleep( 0.01 )
             self.motGauche.write( self.neutre )
             self.motDroit.write( self.neutre )
-            time.sleep( float( "0.00" + str( 9 - vitesse ) ) )
+            if not vitesse: time.sleep( 0.005 )
+            self.compteur_droit += 1
+            self.compteur_gauche += 1
 
+    def get_compteurs( self ):
+        return self.compteur_gauche, self.compteur_droit
+
+    def reset_compteurs( self ):
+        self.compteur_droit = 0
+        self.compteur_gauche = 0
 
     def avancer( self, vitesse ):
         '''
