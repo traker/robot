@@ -205,7 +205,7 @@ class Tourelle():
         self.motHorizontal = Moteur( board, self.pinMotHorizontal )
         self.motVertical = Moteur( board, self.pinMotVertical )
 
-    def depl_tour( self, hori=motHorizontal.get_etat(), vert=motVertical.get_etat() ):
+    def depl_tour( self, hori=90, vert=90 ):
         """
             permet de faire des deplacements selon un axe de rotation
         @param hori: angle rotation horizontal
