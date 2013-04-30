@@ -141,12 +141,12 @@ class Propulsion():
 
     def tourner_mm( self, deg ):
         if deg < 180:
-            for i in range( 0, ( 180 - deg ) * 3.14 ):
+            for i in range( 0, ( 180 - deg ) * 2 ):
                 self.motDroit.step( True )
         elif deg == 180:
             pass
         elif deg > 180:
-            for i in range( 0, ( deg - 180 ) * 3.14 ):
+            for i in range( 0, ( deg - 180 ) * 2 ):
                 self.motGauche.step( True )
 
     def get_compteurs( self ):
