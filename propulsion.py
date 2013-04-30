@@ -129,6 +129,14 @@ class Propulsion():
         self.motGauche.write( self.list_vitesse[0] )
         self.motDroit.write( self.list_vitesse[1] )
 
+    def avancer_mm( self, mm ):
+        for i in range( 0, mm ):
+            self.motGauche.write( 180 )
+            self.motDroit.write( 0 )
+            self.motGauche.write( self.neutre )
+            self.motDroit.write( self.neutre )
+
+
     def avancer( self, vitesse ):
         '''
             commande permetant de faire avancer le robot en ligne droite
@@ -197,7 +205,7 @@ class Tourelle():
         self.motHorizontal = Moteur( board, self.pinMotHorizontal )
         self.motVertical = Moteur( board, self.pinMotVertical )
 
-    def depl_tour( self, hori, vert ):
+    def depl_tour( self, hori=self.motHorizontal.get_etat(), vert=self.motVertical.get_etat() ):
         """
             permet de faire des deplacements selon un axe de rotation
         @param hori: angle rotation horizontal
