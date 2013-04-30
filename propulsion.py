@@ -129,13 +129,14 @@ class Propulsion():
         self.motGauche.write( self.list_vitesse[0] )
         self.motDroit.write( self.list_vitesse[1] )
 
-    def avancer_mm( self, mm ):
+    def avancer_mm( self, mm , vitesse ):
         for i in range( 0, mm ):
             self.motGauche.write( 180 )
             self.motDroit.write( 0 )
             time.sleep( 0.01 )
             self.motGauche.write( self.neutre )
             self.motDroit.write( self.neutre )
+            time.sleep( float( "0.0" + str( 9 - vitesse ) ) )
 
 
     def avancer( self, vitesse ):
