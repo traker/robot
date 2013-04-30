@@ -67,7 +67,7 @@ class Moteur():
         objet pernettant de manipuler un servo
     '''
     etat = 90
-    def __init__( self, board, pin ):
+    def __init__( self, board, pin , posgauche=True ):
         '''
         @param board: objet pyfirmata
         @type board: pyfirmata
@@ -76,6 +76,26 @@ class Moteur():
         '''
         board.servo_config( pin, angle=90 )
         self.servo = board.digital[pin]
+        self.compteur = 0
+        self.poschassis = posgauche
+
+    def step( self, sens ):
+        if self.poschassis:
+            if sens:
+                self.write( 180 )
+                self.compteur += 1
+            else:
+                self.write( 0 )
+                self.compteur -= 1
+        else:
+            if sens:
+                self.write( 0 )
+                self.compteur += 1
+            else:
+                self.write( 180 )
+                self.compteur -= 1
+        time.sleep( 0.01 )
+        self.write( 90 )
 
     def write( self, angle ):
         '''
@@ -110,37 +130,24 @@ class Propulsion():
         self.pinMotGauche = config.getint( 'Propulsion', 'pin_moteurgauche' )
         self.pinMotDroite = config.getint( 'Propulsion', 'pin_moteurdroit' )
         self.motGauche = Moteur( board, self.pinMotGauche )
-        self.motDroit = Moteur( board, self.pinMotDroite )
-        self.compteur_droit = 0
-        self.compteur_gauche = 0
+        self.motDroit = Moteur( board, self.pinMotDroite, False )
         #dictionnaire vitesse = (servoG, servoD)
-        self.dic_vitesse = {
-                        "0": ( self.neutre - 90, self.neutre + 90 ),
-                        "1": ( self.neutre - 50, self.neutre + 50 ),
-                        "2": ( self.neutre - 20, self.neutre + 20 ),
-                        "3": ( self.neutre, self.neutre ),
-                        "4": ( self.neutre + 20, self.neutre - 20 ),
-                        "5": ( self.neutre + 50, self.neutre - 50 ),
-                        "6": ( self.neutre + 90, self.neutre - 90 )
-                        }
-
-    def __command__( self ):
-        '''
-            envoi les commandes aux moteurs
-        '''
-        self.motGauche.write( self.list_vitesse[0] )
-        self.motDroit.write( self.list_vitesse[1] )
 
     def avancer_mm( self, mm , vitesse ):
         for i in range( 0, mm ):
-            self.motGauche.write( 180 )
-            self.motDroit.write( 0 )
-            time.sleep( 0.01 )
-            self.motGauche.write( self.neutre )
-            self.motDroit.write( self.neutre )
+            self.motGauche.step( True )
+            self.motDroit.step( True )
             if not vitesse: time.sleep( 0.005 )
-            self.compteur_droit += 1
-            self.compteur_gauche += 1
+
+    def tourner_mm( self, deg ):
+        if deg < 180:
+            for i in range( 0, 180 - deg ):
+                self.motDroit.step( True )
+        elif deg == 180:
+            pass
+        elif deg > 180:
+            for i in range( 0, deg - 180 ):
+                self.motDroit.step( True )
 
     def get_compteurs( self ):
         return self.compteur_gauche, self.compteur_droit
@@ -148,58 +155,6 @@ class Propulsion():
     def reset_compteurs( self ):
         self.compteur_droit = 0
         self.compteur_gauche = 0
-
-    def avancer( self, vitesse ):
-        '''
-            commande permetant de faire avancer le robot en ligne droite
-        @param vitesse: 7 vitesses diferentes regarder self.dic_vitesse
-        @type vitesse: int
-        '''
-        self.vitesse = vitesse
-        if self.dic_vitesse.has_key( str( vitesse ) ):
-            self.list_vitesse = self.dic_vitesse[str( vitesse )]
-        else:
-            self.list_vitesse = self.dic_vitesse["3"]
-        self.__command__()
-
-    def tourner( self, deg ):
-        '''
-            commande permetant de faire tourner le robot, en avancant ou a l'arret
-        @param deg: angle de 0 a 360 , 180 = tout droit
-        @type deg: int
-        '''
-        if deg < 180:
-                for n in range( deg, 180 ):
-                    temp = []
-                    temp.append( self.list_vitesse )
-                    if self.vitesse < 3 :
-                        self.list_vitesse = [self.list_vitesse[0], self.dic_vitesse["3"][1]]
-                    elif self.vitesse == 3:
-                        self.list_vitesse = [self.dic_vitesse["2"][0], self.dic_vitesse["4"][1]]
-                    elif self.vitesse > 3:
-                        self.list_vitesse = [self.dic_vitesse["3"][0], self.list_vitesse[1]]
-                    self.__command__()
-                    self.list_vitesse = self.dic_vitesse[str( self.vitesse )]
-                    time.sleep( 0.05 )
-                    self.__command__()
-        elif deg == 180:
-                self.list_vitesse = self.dic_vitesse[str( self.vitesse )]
-                self.__command__()
-        elif deg > 180:
-                for n in range( 180, deg ):
-                    temp = []
-                    temp.append( self.list_vitesse )
-                    if self.vitesse < 3 :
-                        self.list_vitesse = [self.dic_vitesse["3"][0], self.list_vitesse[1]]
-                    elif self.vitesse == 3:
-                        self.list_vitesse = [self.dic_vitesse["4"][0], self.dic_vitesse["2"][1]]
-                    elif self.vitesse > 3:
-                        self.list_vitesse = [self.list_vitesse[0], self.dic_vitesse["3"][1]]
-                    self.__command__()
-                    self.list_vitesse = self.dic_vitesse[str( self.vitesse )]
-                    time.sleep( 0.05 )
-                    self.__command__()
-        self.__command__()
 
 class Tourelle():
     '''
