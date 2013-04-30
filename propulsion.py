@@ -143,11 +143,13 @@ class Propulsion():
         if deg < 180:
             for i in range( 0, ( 180 - deg ) * 2 ):
                 self.motDroit.step( True )
+                self.motGauche.step( False )
         elif deg == 180:
             pass
         elif deg > 180:
             for i in range( 0, ( deg - 180 ) * 2 ):
                 self.motGauche.step( True )
+                self.motDroit.step( False )
 
     def get_compteurs( self ):
         return self.compteur_gauche, self.compteur_droit
