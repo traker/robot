@@ -133,7 +133,7 @@ class Propulsion():
         for i in range( 0, mm ):
             self.motGauche.write( 180 )
             self.motDroit.write( 0 )
-            time.sleep( 0.1 )
+            time.sleep( 0.05 )
             self.motGauche.write( self.neutre )
             self.motDroit.write( self.neutre )
 
