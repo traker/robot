@@ -136,7 +136,7 @@ class Propulsion():
             time.sleep( 0.01 )
             self.motGauche.write( self.neutre )
             self.motDroit.write( self.neutre )
-            time.sleep( float( "0.0" + str( 9 - vitesse ) ) )
+            time.sleep( float( "0.00" + str( 9 - vitesse ) ) )
 
 
     def avancer( self, vitesse ):
