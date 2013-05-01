@@ -42,9 +42,7 @@ class Robot():
         #self.pilevar.append( var )
 
     def __exec_next__( self ):
-        tmp = self.pilevar.popleft()
-        exe = tmp[0]
-        var = tmp[1]
+        exe, var = self.pile.popleft()
         if var == None:
             self.pile_resultat.append( exe() )
         else:
