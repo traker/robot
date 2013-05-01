@@ -37,12 +37,14 @@ class Robot():
         self.running = False
 
     def add_to_pile( self, exe, var=None ):
-        objexe = exe, var
+        objexe = ( exe, var )
         self.pile.append( objexe )
         #self.pilevar.append( var )
 
     def __exec_next__( self ):
-        exe, var = self.pilevar.popleft()
+        tmp = self.pilevar.popleft()
+        exe = tmp[0]
+        var = tmp[1]
         if var == None:
             self.pile_resultat.append( exe() )
         else:

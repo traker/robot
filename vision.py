@@ -233,7 +233,7 @@ class Vision():
 		if etat == 1:
 			self.set_laser( False )
 		self.__find_centroid_faster_numpy__( self.matriximg, 1 )
-		return self.__calculate_distance__( self.point[1] )
+		return abs( self.__calculate_distance__( self.point[1] ) )
 
 	def get_etat_laser( self ):
 		'''
