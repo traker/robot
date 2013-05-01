@@ -138,10 +138,16 @@ class Propulsion():
         #dictionnaire vitesse = (servoG, servoD)
 
     def avancer_mm( self, mm , vitesse ):
-        for i in range( 0, mm ):
-            self.motGauche.step( True )
-            self.motDroit.step( True )
-            if not vitesse: time.sleep( 0.005 )
+        if mm > 0:
+            for i in range( 0, mm ):
+                self.motGauche.step( True )
+                self.motDroit.step( True )
+                if not vitesse: time.sleep( 0.005 )
+        elif mm < 0:
+            for i in range( 0, mm ):
+                self.motGauche.step( False )
+                self.motDroit.step( False )
+                if not vitesse: time.sleep( 0.005 )
 
     def tourner_mm( self, deg ):
         if deg < 180:
