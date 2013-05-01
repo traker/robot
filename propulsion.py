@@ -9,8 +9,9 @@ import pyfirmata, time
 import ConfigParser, numpy
 import accelerometer
 import commands
-
+#-------------
 class Accel():
+#-------------
     '''
         renvoi differente information du module accelerometre.
         configuration du module:
@@ -112,13 +113,16 @@ class Moteur():
         '''
         return self.etat
 
+    def get_compteur( self ):
+        return self.compteur
+
+    def reset_compteur( self ):
+        self.compteur = 0
 
 class Propulsion():
     '''
         class permettant de gerer la propusion du robot
     '''
-    list_vitesse = [0, 0]
-    vitesse = 3
     neutre = 90
     def __init__( self, config, board ):
         '''
@@ -152,11 +156,11 @@ class Propulsion():
                 self.motDroit.step( False )
 
     def get_compteurs( self ):
-        return self.compteur_gauche, self.compteur_droit
+        return self.motGauche.get_compteur(), self.motDroit.get_compteur()
 
     def reset_compteurs( self ):
-        self.compteur_droit = 0
-        self.compteur_gauche = 0
+        self.motGauche.reset_compteur()
+        self.motDroit.reset_compteur()
 
 class Tourelle():
     '''
@@ -243,6 +247,7 @@ class Tourelle():
             self.motHorizontal.write( arrh[n] )
             self.motVertical.write( arrv[n] )
             time.sleep( 0.002 )
+
     def get_etat( self ):
         '''
         @return: retourne la position des axes [axe_horizontal, axe_vertical]
