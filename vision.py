@@ -217,6 +217,7 @@ class Vision():
 		@rtype: cvimage
 		'''
 		self.__laplace_filter__()
+		cv.SaveImage( "img.jpg", self.laplaceim )
 		return self.laplaceim
 
 	def get_range( self ):
