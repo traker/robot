@@ -1,6 +1,6 @@
 import ConfigParser, pyfirmata
 from vision import Vision
-import propulsion, landmap, collections, time, thread, numpy
+import propulsion, landmap, collections, time, thread, numpy, stream
 class Robot():
     '''
         classe qui rassemble l'ensemble des modules du robot
@@ -27,6 +27,7 @@ class Robot():
         self.orientation = 0.0
         self.x = 0.0
         self.y = 0.0
+        self.stream = stream.HTTPServer( "192.168.1.7", self )
 
 
     def start( self ):
