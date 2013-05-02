@@ -110,12 +110,12 @@ function got_new_image() {
 
       while True:
         response = "Content-type: image/jpeg\n\n"
-        response = response + self.server.bot.vue.get_laplace_image()
+        response = response + self.server.bot.get_laplace_image()
         response = response + "\n--%s\n" % boundary
         self.wfile.write( response )
 
     elif self.path[:9] == "/GetImage":
-      response = self.server.bot.vue.get_laplace_image()
+      response = self.server.bot.get_laplace_image()
       self.send_response( 200 )
       self.send_header( "Content-Length", str( len( response ) ) )
       self.send_header( "Content-Type", "image/jpeg" )
