@@ -71,6 +71,6 @@ class MyHandler( BaseHTTPRequestHandler ):
 class ThreadedHTTPServer( ThreadingMixIn, HTTPServer ):
     """Handle requests in a separate thread."""
     def __init__( self, server_address, img ):
-        SocketServer.TCPServer.__init__( self, server_address, HTTPHandler )
+        SocketServer.TCPServer.__init__( self, server_address, MyHandler )
         self.exe = img
 
