@@ -2,13 +2,13 @@
 #MJPEG Server for the webcam
 import string, cgi, time
 from os import curdir, sep
-from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
-from SocketServer import ThreadingMixIn
+import BaseHTTPServer
 import SocketServer
 import cv
 import re
+from test.test_httpservers import BaseHTTPServerTestCase
 cameraQuality = 75
-class MyHandler( BaseHTTPRequestHandler ):
+class MyHandler( BaseHTTPServer.BaseHTTPRequestHandler ):
     def do_GET( self ):
         global cameraQuality
         try:
@@ -68,7 +68,7 @@ class MyHandler( BaseHTTPRequestHandler ):
         except :
             pass
 
-class ThreadedHTTPServer( ThreadingMixIn, HTTPServer ):
+class HTTPServer( SocketServer.ThreadingMixIn, BaseHTTPServer.HTTPServer ):
     """Handle requests in a separate thread."""
     def __init__( self, server_address, img ):
         SocketServer.TCPServer.__init__( self, server_address, MyHandler )
