@@ -26,7 +26,7 @@ class Vision():
 		self.bitimage = cv.CreateImage( self.size, 8, 1 ) # image noir et blanc
 		self.matriximg = None
 		self.laplaceim = cv.CreateImage( self.size, cv.IPL_DEPTH_8U, 1 )
-		self.image_actuel = cv.CreateImage( self.size, cv.IPL_DEPTH_8U, 3 )
+		self.image_actuel = cv.CreateImage( self.size, cv.IPL_DEPTH_8U, 1 )
 		self.image_brut = cv.CreateImageHeader( self.size, 8, 3 ) #image capture
 		self.snapshot = surface.Surface( self.size )	# tampon image
 		self.vmin = config.getint( 'Camera', 'tresholdmin' ) #valeur minimum treshold
@@ -114,7 +114,8 @@ class Vision():
 			filtre l'image avec l'algo laplace puis la stocke dans self.laplacehim
 		'''
 		self.__capture_im__()
-		self.laplaceim_jpg = transform.laplacian( self.snapshot )
+		laplaceim_jpg = transform.laplacian( self.snapshot )
+		tempim = self.__pygame_to_cvimage__( laplaceim_jpg )
 		cv.CvtColor( tempim, self.laplaceim, cv.CV_RGB2GRAY )
 		self.image_actuel = cv.CloneImage( self.laplaceim )
 		#cv.SaveImage( "img.jpg", self.laplaceim )
