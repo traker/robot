@@ -37,6 +37,12 @@ class Robot():
     def stop( self ):
         self.running = False
 
+    def start_httpd( self ):
+        thread.start_new_thread( self.stream.serve_forever, () )
+
+    def stop_httpd( self ):
+        thread.exit_thread()
+
     def add_to_pile( self, exe, var=None ):
         objexe = ( exe, var )
         self.pile.append( objexe )
