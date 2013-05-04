@@ -26,6 +26,7 @@ class Vision():
 		self.bitimage = cv.CreateImage( self.size, 8, 1 ) # image noir et blanc
 		self.matriximg = None
 		self.laplaceim = cv.CreateImage( self.size, cv.IPL_DEPTH_8U, 1 )
+		self.image_actuel = cv.CreateImage( self.size, cv.IPL_DEPTH_8U, 3 )
 		self.image_brut = cv.CreateImageHeader( self.size, 8, 3 ) #image capture
 		self.snapshot = surface.Surface( self.size )	# tampon image
 		self.vmin = config.getint( 'Camera', 'tresholdmin' ) #valeur minimum treshold
@@ -103,6 +104,7 @@ class Vision():
 		imgg = cv.CreateImage( self.size, 8, 1 )
 		cv.CvtColor( blurim, imgg, cv.CV_RGB2GRAY )
 		cv.Threshold( imgg, self.bitimage, self.vmin, self.vmax, cv.CV_THRESH_BINARY )
+		self.image_actuel = cv.CloneImage( self.bitimage )
 		matpygame = surfarray.array2d( self.__cvimage_to_pygame__( self.bitimage ) )
 		self.matriximg = numpy.asarray( matpygame )
 
@@ -113,8 +115,8 @@ class Vision():
 		'''
 		self.__capture_im__()
 		self.laplaceim_jpg = transform.laplacian( self.snapshot )
-		tempim = self.__pygame_to_cvimage__( self.laplaceim_jpg )
 		cv.CvtColor( tempim, self.laplaceim, cv.CV_RGB2GRAY )
+		self.image_actuel = cv.CloneImage( self.laplaceim )
 		#cv.SaveImage( "img.jpg", self.laplaceim )
 		#imgcl = cv.CloneImage( self.image_brut )
 		#dst_16s2 = cv.CreateImage( self.size, cv.IPL_DEPTH_16S, 1 )
