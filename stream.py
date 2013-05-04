@@ -28,8 +28,7 @@ class MyHandler( BaseHTTPServer.BaseHTTPRequestHandler ):
                 self.wfile.write( "Content-Type: multipart/x-mixed-replace; boundary=--aaboundary" )
                 self.wfile.write( "\r\n\r\n" )
                 while 1:
-                    img = self.server.exe()
-                    cv2mat = cv.EncodeImage( ".jpeg", img, ( cv.CV_IMWRITE_JPEG_QUALITY, cameraQuality ) )
+                    cv2mat = cv.EncodeImage( ".jpeg", self.server.imgl, ( cv.CV_IMWRITE_JPEG_QUALITY, cameraQuality ) )
                     JpegData = cv2mat.tostring()
                     self.wfile.write( "--aaboundary\r\n" )
                     self.wfile.write( "Content-Type: image/jpeg\r\n" )
@@ -72,5 +71,5 @@ class HTTPServer( SocketServer.ThreadingMixIn, BaseHTTPServer.HTTPServer ):
     """Handle requests in a separate thread."""
     def __init__( self, server_address, img ):
         SocketServer.TCPServer.__init__( self, server_address, MyHandler )
-        self.exe = img
+        self.imgl = img
 
