@@ -26,7 +26,6 @@ class Vision():
 		self.bitimage = cv.CreateImage( self.size, 8, 1 ) # image noir et blanc
 		self.matriximg = None
 		self.laplaceim = cv.CreateImage( self.size, cv.IPL_DEPTH_8U, 1 )
-		self.laplaceim_jpg = surface.Surface( self.size )
 		self.image_brut = cv.CreateImageHeader( self.size, 8, 3 ) #image capture
 		self.snapshot = surface.Surface( self.size )	# tampon image
 		self.vmin = config.getint( 'Camera', 'tresholdmin' ) #valeur minimum treshold
@@ -220,10 +219,6 @@ class Vision():
 		self.__laplace_filter__()
 		cv.SaveImage( "img.jpg", self.laplaceim )
 		return self.laplaceim
-
-	def get_laplace_jpg( self ):
-		self.__img_filter__()
-		return self.laplaceim_jpg
 
 	def get_range( self ):
 		'''

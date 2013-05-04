@@ -1,210 +1,75 @@
-"""
-Webcam Streamer
+#edited by Norbert (mjpeg part) from a file from Copyright Jon Berg , turtlemeat.com,
+#MJPEG Server for the webcam
+import string, cgi, time
+from os import curdir, sep
+from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
+from SocketServer import ThreadingMixIn
+import cv
+import re
+cameraQuality = 75
+class MyHandler( BaseHTTPRequestHandler ):
+    def do_GET( self ):
+        global cameraQuality
+        try:
+            self.path = re.sub( '[^.a-zA-Z0-9]', "", str( self.path ) )
+            if self.path == "" or self.path == None or self.path[:1] == ".":
+                return
+            if self.path.endswith( ".html" ):
+                f = open( curdir + sep + self.path )
+                self.send_response( 200 )
+                self.send_header( 'Content-type', 'text/html' )
+                self.end_headers()
+                self.wfile.write( f.read() )
+                f.close()
+                return
+            if self.path.endswith( ".mjpeg" ):
+                self.send_response( 200 )
+                self.wfile.write( "Content-Type: multipart/x-mixed-replace; boundary=--aaboundary" )
+                self.wfile.write( "\r\n\r\n" )
+                while 1:
+                    img = self.server.exe()
+                    cv2mat = cv.EncodeImage( ".jpeg", img, ( cv.CV_IMWRITE_JPEG_QUALITY, cameraQuality ) )
+                    JpegData = cv2mat.tostring()
+                    self.wfile.write( "--aaboundary\r\n" )
+                    self.wfile.write( "Content-Type: image/jpeg\r\n" )
+                    self.wfile.write( "Content-length: " + str( len( JpegData ) ) + "\r\n\r\n" )
+                    self.wfile.write( JpegData )
+                    self.wfile.write( "\r\n\r\n\r\n" )
+                    time.sleep( 0.05 )
+                return
+            if self.path.endswith( ".jpeg" ):
+                f = open( curdir + sep + self.path )
+                self.send_response( 200 )
+                self.send_header( 'Content-type', 'image/jpeg' )
+                self.end_headers()
+                self.wfile.write( f.read() )
+                f.close()
+                return
+            return
+        except IOError:
+            self.send_error( 404, 'File Not Found: %s' % self.path )
+    def do_POST( self ):
+        global rootnode, cameraQuality
+        try:
+            ctype, pdict = cgi.parse_header( self.headers.getheader( 'content-type' ) )
+            if ctype == 'multipart/form-data':
+                query = cgi.parse_multipart( self.rfile, pdict )
+            self.send_response( 301 )
 
-Uses Pygame and HTTPServer to stream USB Camera images via HTTP (Webcam)
+            self.end_headers()
+            upfilecontent = query.get( 'upfile' )
+            print "filecontent", upfilecontent[0]
+            value = int( upfilecontent[0] )
+            cameraQuality = max( 2, min( 99, value ) )
+            self.wfile.write( "<HTML>POST OK. Camera Set to<BR><BR>" );
+            self.wfile.write( str( cameraQuality ) );
 
-HTTP Port, camera resolutions and framerate are hardcoded to keep it
-simple but the program can be updated to take options.
+        except :
+            pass
 
-Default HTTP Port 8080, 320x240 resolution and 6 frames per second.
-Point your browser at http://localhost:8080/
+class ThreadedHTTPServer( ThreadingMixIn, HTTPServer ):
+    """Handle requests in a separate thread."""
+    def __init__( self, server_address, img ):
+        SocketServer.TCPServer.__init__( self, server_address, HTTPHandler )
+        self.exe = img
 
-http://www.madox.net/
-"""
-import pygame
-
-import signal
-import sys
-import tempfile
-import threading
-import time
-
-import BaseHTTPServer
-import SocketServer
-
-class CameraCapture():
-  def __init__( self, vue, fps ):
-    #Set up a CameraSurface Buffer
-    self.exe = vue
-    self.camera_surface = vue.get_laplace_jpg()
-    self.jpeg = ""
-    self.jpeg_sema = threading.BoundedSemaphore()
-    self.period = 1 / float( fps )
-    self.stop = True
-
-    #Prepare conditions
-    self.frame_count = 0
-    self.frame_available = threading.Condition()
-
-    #Kick it off
-    self.start_capture()
-
-  def get_image( self ):
-    self.jpeg_sema.acquire()
-    jpeg_copy = self.jpeg
-    self.jpeg_sema.release()
-    return jpeg_copy
-
-  def stop_capture( self ):
-    self.stop = True
-
-  def start_capture( self ):
-    if self.stop == True:
-      self.stop = False
-      self.capture_image()
-
-  def capture_image( self ):
-    #Time start
-    time_start = time.time()
-
-    #Capture the image [Blocking until image received]
-    self.camera_surface = self.exe.get_laplace_jpg()
-
-    #Using a tempfile here because pygame image save gets
-    #filetype from extension.  Limiting module use so no PIL.
-    temp_jpeg = tempfile.NamedTemporaryFile( suffix='.jpg' )
-    pygame.image.save( self.camera_surface, temp_jpeg.name )
-
-    #Read back the JPEG from the tempfile and store it to self
-    temp_jpeg.seek( 0 )
-    self.jpeg_sema.acquire()
-    self.jpeg = temp_jpeg.read()
-    self.jpeg_sema.release()
-    temp_jpeg.close()
-
-    #Increment frame count and mark new frame condition
-    self.frame_available.acquire()
-    self.frame_count += 1
-    self.frame_available.notifyAll()
-    self.frame_available.release()
-
-    #If not stopped, prepare for the next capture
-    if self.stop == False:
-      time_elapsed = time.time() - time_start
-      if time_elapsed >= self.period:
-        time_wait = 0
-      else:
-        time_wait = self.period - time_elapsed
-      t = threading.Timer( time_wait, self.capture_image )
-      t.start()
-
-class HTTPServer( SocketServer.ThreadingMixIn,
-                 BaseHTTPServer.HTTPServer ):
-  def __init__( self, server_address, vue, cam_fps ):
-    SocketServer.TCPServer.__init__( self, server_address, HTTPHandler )
-    self.camera = CameraCapture( vue, cam_fps )
-
-class HTTPHandler( BaseHTTPServer.BaseHTTPRequestHandler ):
-  """
-  HTTP Request Handler
-  """
-  def do_GET( self ):
-    if self.path == "/":
-      response = """
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
-"http://www.w3.org/TR/html4/strict.dtd">
-<html>
-<head>
-<title>Webcam Streamer</title>
-</head>
-<body onload="get_new_image();">Select a streaming option below :<br>
-<a href="/GetStream">Multipart:
-Preferred for fast connections, supported by most browsers.</a><br>
-<a href="/JSStream">Javascript:
-Backup option, for some mobile browsers (Android) and good for slow
-connections.</a>
-</body>
-</html>
-"""
-      self.send_response( 200 )
-      self.send_header( "Content-Length", str( len( response ) ) )
-      self.send_header( "Cache-Control", "no-store" )
-      self.end_headers()
-      self.wfile.write( response )
-
-    elif self.path[:9] == "/JSStream":
-      #HTML with Javascript streaming for browsers that don't support
-      #multipart jpeg (Android!!!)
-      response = """
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
-"http://www.w3.org/TR/html4/strict.dtd">
-<html>
-<head>
-<title>Webcam Stream (Javascript)</title>
-<script type="text/javascript">
-function get_new_image(){
-  var img = new Image();
-  var d = new Date();
-  img.style.zIndex = 0;
-  img.style.position = "absolute";
-  img.onload = got_new_image;
-  //Generate unique URL to bypass caching on mobile browsers that ignore
-  //cache-control
-  img.src = "/GetImage&n=" + d.getTime(); 
-  var webcam = document.getElementById("images");
-  webcam.insertBefore(img, webcam.firstChild);
-}
-
-function got_new_image() {
-  var d = new Date();
-  this.style.zIndex = d.getTime()
-  //Kill the earlier siblings (previous images)
-  while(this.parentNode.childNodes[1]) {
-    this.parentNode.removeChild(this.parentNode.childNodes[1]);
-  }
-  get_new_image();
-}
-</script>
-</head>
-<body onload="get_new_image();">
-<div id="images"></div>
-</body>
-</html>
-"""
-      self.send_response( 200 )
-      self.send_header( "Content-Length", str( len( response ) ) )
-      self.send_header( "Cache-Control", "no-store" )
-      self.end_headers()
-      self.wfile.write( response )
-
-    elif self.path[:10] == "/GetStream":
-      #Boundary is an arbitrary string that should not occur in the
-      #data stream, using own website address here
-      boundary = "www.madox.net"
-      self.send_response( 200 )
-      self.send_header( "Access-Control-Allow-Origin", "*" )
-      self.send_header( "Content-type",
-                       "multipart/x-mixed-replace;boundary=%s"
-                       % boundary )
-      self.end_headers()
-
-      frame_id = self.server.camera.frame_count
-
-      while True:
-        self.server.camera.frame_available.acquire()
-        while frame_id == self.server.camera.frame_count:
-          self.server.camera.frame_available.wait()
-        self.server.camera.frame_available.release()
-
-        frame_id = self.server.camera.frame_count
-        response = "Content-type: image/jpeg\n\n"
-        response = response + self.server.camera.get_image()
-        response = response + "\n--%s\n" % boundary
-        self.wfile.write( response )
-
-    elif self.path[:9] == "/GetImage":
-      response = self.server.camera.get_image()
-      self.send_response( 200 )
-      self.send_header( "Content-Length", str( len( response ) ) )
-      self.send_header( "Content-Type", "image/jpeg" )
-      self.send_header( "Content-Disposition",
-                       "attachment;filename=\"snapshot.jpg\"" )
-      self.send_header( "Cache-Control", "no-store" )
-      self.end_headers()
-      self.wfile.write( response )
-
-    else:
-      self.send_error( 404, "Banana Not Found." )
-      self.end_headers()
-
-  do_HEAD = do_POST = do_GET
