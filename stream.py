@@ -6,7 +6,7 @@ import BaseHTTPServer
 import SocketServer
 import cv
 import re
-from test.test_httpservers import BaseHTTPServerTestCase
+
 cameraQuality = 75
 class MyHandler( BaseHTTPServer.BaseHTTPRequestHandler ):
     def do_GET( self ):
