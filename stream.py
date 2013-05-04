@@ -4,6 +4,7 @@ import string, cgi, time
 from os import curdir, sep
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 from SocketServer import ThreadingMixIn
+import SocketServer
 import cv
 import re
 cameraQuality = 75
