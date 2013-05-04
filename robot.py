@@ -27,7 +27,7 @@ class Robot():
         self.orientation = 0.0
         self.x = 0.0
         self.y = 0.0
-        self.stream = stream.HTTPServer( ( "", 8080 ), self.vue.laplaceim )
+        self.stream = stream.HTTPServer( ( "", 8080 ), self.vue.image_actuel )
 
 
     def start( self ):
