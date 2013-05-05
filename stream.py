@@ -28,7 +28,8 @@ class MyHandler( BaseHTTPServer.BaseHTTPRequestHandler ):
                 self.wfile.write( "Content-Type: multipart/x-mixed-replace; boundary=--aaboundary" )
                 self.wfile.write( "\r\n\r\n" )
                 while 1:
-                    cv2mat = cv.EncodeImage( ".jpeg", self.server.imgl, ( cv.CV_IMWRITE_JPEG_QUALITY, cameraQuality ) )
+                    img = self.server.imgl.image_actuel
+                    cv2mat = cv.EncodeImage( ".jpeg", img, ( cv.CV_IMWRITE_JPEG_QUALITY, cameraQuality ) )
                     JpegData = cv2mat.tostring()
                     self.wfile.write( "--aaboundary\r\n" )
                     self.wfile.write( "Content-Type: image/jpeg\r\n" )
