@@ -87,7 +87,8 @@ class Vision():
 		'''
 		if self.cam.query_image():
 			self.snapshot = self.cam.get_image( self.snapshot )
-			time.sleep( 0.05 )
+			self.snapshot = self.cam.get_image( self.snapshot )
+			self.snapshot = self.cam.get_image( self.snapshot )
 			self.image_brut = self.__pygame_to_cvimage__( self.snapshot )
 		else:
 			self.image_brut = self.snapshot
