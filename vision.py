@@ -86,8 +86,8 @@ class Vision():
 			capture une image et la stocke dans self.image_brut
 		'''
 		if self.cam.query_image():
-			time.sleep( 0.05 )
 			self.snapshot = self.cam.get_image( self.snapshot )
+			time.sleep( 0.05 )
 			self.image_brut = self.__pygame_to_cvimage__( self.snapshot )
 		else:
 			self.image_brut = self.snapshot
@@ -102,6 +102,7 @@ class Vision():
 		blurim = cv.CloneImage( dilatedimg )
 		#cv.Smooth(dilatedimg, blurim,cv.CV_GAUSSIAN, 5, 5)
 		imgg = cv.CreateImage( self.size, 8, 1 )
+		#cv.CvtColor( blurim, imgg, cv.CV_BGR2HSV )
 		cv.CvtColor( blurim, imgg, cv.CV_RGB2GRAY )
 		cv.Threshold( imgg, self.bitimage, self.vmin, self.vmax, cv.CV_THRESH_BINARY )
 		cv.Copy( self.bitimage, self.image_actuel )
