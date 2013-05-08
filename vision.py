@@ -264,6 +264,25 @@ class Vision():
 		'''
 		return self.laser_pos
 
+	def estimateLux( self ):
+		self.__capture_im__()
+		img = cv.CloneImage( self.image_brut )
+		img = cv.GetMat( img, allowND=0 ) # iplImage -> CvMat
+		#initialize placeholders for BGR values
+		# get a CvScalar (tuple) with the sum of each of the 3 channels
+		resultsTuple = cv.Sum( img )
+		#return results as a list in RGB order for simplicty's sake
+		pixels = self.cam_height * self.cam_width
+		statsRGB = list( [resultsTuple[2] / pixels, resultsTuple[1] / pixels, resultsTuple[0] / pixels] )
+		#calculate the light index using formula found at autohotkey.com
+		red = statsRGB[0]
+		green = statsRGB[1]
+		blue = statsRGB[2]
+		lux = ( red * .229 ) + ( green * .587 ) + ( blue * .114 )
+		statsRGB.insert( 0, lux )
+		return statsRGB
+
+
 	def __del__( self ):
 		print 'Goodbye'
 		self.cam.stop()
