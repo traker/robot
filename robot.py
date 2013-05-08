@@ -45,7 +45,7 @@ class Robot():
             coeur se compose de differente pile avec different priorite
         '''
         while self.running:
-            if self.pile_vision.__len__() <= 0:
+            if self.pile_vision.pile.__len__() <= 0:
                 time.sleep( 0.1 )
             else:
                 self.pile_vision.exec_next()
