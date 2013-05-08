@@ -19,6 +19,7 @@ class Vision():
 		@param config: objet configparser contenant les configurations du robot
 		@type config: configparser.RawConfigParser
 		'''
+		self.timexe = 0
 		self.cam_width = config.getint( 'Camera', 'width' ) #largeur camera
 		self.cam_height = config.getint( 'Camera', 'height' ) #hauteur camera
 		self.device = config.get( 'Camera', 'device' ) # lien vers la webcam 
@@ -85,13 +86,21 @@ class Vision():
 		'''
 			capture une image et la stocke dans self.image_brut
 		'''
-		if self.cam.query_image():
-			self.snapshot = self.cam.get_image( self.snapshot )
-			self.snapshot = self.cam.get_image( self.snapshot )
-			self.snapshot = self.cam.get_image( self.snapshot )
-			self.image_brut = self.__pygame_to_cvimage__( self.snapshot )
+		if ( time.time() - self.timexe ) > 0.2:
+			if self.cam.query_image():
+				self.snapshot = self.cam.get_image( self.snapshot )
+				self.snapshot = self.cam.get_image( self.snapshot )
+				self.snapshot = self.cam.get_image( self.snapshot )
+				self.image_brut = self.__pygame_to_cvimage__( self.snapshot )
+			else:
+				self.image_brut = self.snapshot
 		else:
-			self.image_brut = self.snapshot
+			if self.cam.query_image():
+				self.snapshot = self.cam.get_image( self.snapshot )
+				self.image_brut = self.__pygame_to_cvimage__( self.snapshot )
+			else:
+				self.image_brut = self.snapshot
+
 
 	def __img_filter__( self ):
 		'''
