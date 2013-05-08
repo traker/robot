@@ -92,6 +92,7 @@ class Vision():
 				self.snapshot = self.cam.get_image( self.snapshot )
 				self.snapshot = self.cam.get_image( self.snapshot )
 				self.image_brut = self.__pygame_to_cvimage__( self.snapshot )
+				print "flush"
 			else:
 				self.image_brut = self.snapshot
 		else:
