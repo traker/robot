@@ -86,7 +86,7 @@ class Vision():
 			capture une image et la stocke dans self.image_brut
 		'''
 		if self.cam.query_image():
-			#self.snapshot = self.cam.get_image( self.snapshot )
+			self.snapshot = self.cam.get_image( self.snapshot )
 			self.snapshot = self.cam.get_image( self.snapshot )
 			self.snapshot = self.cam.get_image( self.snapshot )
 			self.image_brut = self.__pygame_to_cvimage__( self.snapshot )
