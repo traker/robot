@@ -19,7 +19,7 @@ class Core():
 
     def exec_next( self ):
         objexe = self.pile.popleft()
-        if var == None:
+        if objexe.var == None:
             self.pile_resultat[objexe.nid] = objexe.exe()
         else:
             self.pile_resultat[objexe.nid] = objexe.exe( *objexe.var )
