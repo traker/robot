@@ -32,17 +32,25 @@ class Robot():
 
     def start( self ):
         self.running = True
-        thread.start_new_thread( self.coeur, () )
+        thread.start_new_thread( self.__cerveau__, () )
+        thread.start_new_thread( self.__mouvement__, () )
+        thread.start_new_thread( self.stream.serve_forever, () )
 
     def stop( self ):
         self.running = False
 
-    def start_httpd( self ):
-        thread.start_new_thread( self.stream.serve_forever, () )
+    def __mouvement__( self ):
+        while self.running:
+            if self.pile_move.pile.__len__() <= 0:
+                time.sleep( 0.1 )
+            else:
+                self.pile_move.exec_next()
+                #print self.pile_resultat.popleft()
+            #thread.start_new_thread(gcode.get(ref[0],nullcomm),(ref[1:],))
 
-    def coeur( self ):
+    def __cerveau__( self ):
         '''
-            coeur se compose de differente pile avec different priorite
+            cerveau se compose de differente pile avec different priorite
         '''
         while self.running:
             if self.pile_vision.pile.__len__() <= 0:
@@ -52,7 +60,7 @@ class Robot():
                 #print self.pile_resultat.popleft()
             #thread.start_new_thread(gcode.get(ref[0],nullcomm),(ref[1:],))
 
-    def balayage( self, depart , arrive , pas=0 ):
+    def balayage( self, depart , arrive , pas=1 ):
         if depart <= arrive :
             lis = numpy.arange( depart, arrive, pas )
         else:

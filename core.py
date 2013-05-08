@@ -29,5 +29,3 @@ class Core():
         del self.pile_resultat[id]
         return result
 
-    def __len__( self ):
-        return

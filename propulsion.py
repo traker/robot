@@ -211,7 +211,7 @@ class Tourelle():
 
         if diffrot >= diffhb:
             if self.motHorizontal.get_etat() == hori :
-                print "egal"
+                #print "egal"
                 arrh = numpy.array( [hori] )
             elif flag_h == 1 :
                 arrh = numpy.arange( self.motHorizontal.get_etat(), hori )
