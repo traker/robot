@@ -52,11 +52,11 @@ class Robot():
                 #print self.pile_resultat.popleft()
             #thread.start_new_thread(gcode.get(ref[0],nullcomm),(ref[1:],))
 
-    def balayage( self, depart , arrive ):
+    def balayage( self, depart , arrive , pas=0 ):
         if depart <= arrive :
-            lis = numpy.arange( depart, arrive )
+            lis = numpy.arange( depart, arrive, pas )
         else:
-            lis = numpy.arange( arrive, depart )
+            lis = numpy.arange( arrive, depart, pas )
             lis = lis[::-1]
         listd = []
         self.tourel.depl_tour( depart )

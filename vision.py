@@ -93,7 +93,7 @@ class Vision():
 				self.snapshot = self.cam.get_image( self.snapshot )
 				self.image_brut = self.__pygame_to_cvimage__( self.snapshot )
 				self.timexe = time.time()
-				print self.timexe
+				#print self.timexe
 			else:
 				self.image_brut = self.snapshot
 				self.timexe = time.time()
@@ -167,7 +167,7 @@ class Vision():
 				self.point = 0.0, 0.0
 				tempflag = 1
 				self.plage_rech = ( n[1], n[0] )
-				print "point trouve " + str( n )
+				#print "point trouve " + str( n )
 				break
 		if tempflag == 1:
 			#ygrid, xgrid  = numpy.mgrid[0:cam_width:rez, 0:cam_height:rez]
