@@ -53,7 +53,11 @@ class Robot():
             #thread.start_new_thread(gcode.get(ref[0],nullcomm),(ref[1:],))
 
     def balayage( self, depart , arrive ):
-        lis = numpy.arange( depart, arrive )
+        if depart <= arrive :
+            lis = numpy.arange( depart, arrive )
+        else:
+            lis = numpy.arange( depart, arrive )
+            lis = lis[::-1]
         listd = []
         self.tourel.depl_tour( depart )
         for i in lis:
