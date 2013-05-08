@@ -20,9 +20,9 @@ class Core():
     def exec_next( self ):
         objexe = self.pile.popleft()
         if objexe.var == None:
-            self.pile_resultat[objexe.nid] = objexe.exe()
+            self.pile_resultat[objexe.id] = objexe.exe()
         else:
-            self.pile_resultat[objexe.nid] = objexe.exe( *objexe.var )
+            self.pile_resultat[objexe.id] = objexe.exe( *objexe.var )
 
     def get_result( self, id ):
         result = self.pile_resultat[id]
