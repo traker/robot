@@ -86,7 +86,7 @@ class Vision():
 		'''
 			capture une image et la stocke dans self.image_brut
 		'''
-		if ( time.time() - self.timexe ) > 0.1:
+		if ( time.time() - self.timexe ) > 0.6:
 			if self.cam.query_image():
 				self.snapshot = self.cam.get_image( self.snapshot )
 				self.snapshot = self.cam.get_image( self.snapshot )
