@@ -9,7 +9,7 @@ class Core():
     def __init__( self ):
         self.pile = collections.deque()
         self.pile_resultat = {}
-        self.nid
+        self.nid = 0
 
     def add_to_pile( self, exe, var=None ):
         self.nid += 1
