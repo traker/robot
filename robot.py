@@ -56,7 +56,7 @@ class Robot():
         if depart <= arrive :
             lis = numpy.arange( depart, arrive )
         else:
-            lis = numpy.arange( depart, arrive )
+            lis = numpy.arange( arrive, depart )
             lis = lis[::-1]
         listd = []
         self.tourel.depl_tour( depart )
