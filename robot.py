@@ -1,6 +1,6 @@
 import ConfigParser, pyfirmata
 from vision import Vision
-import propulsion, landmap, collections, time, thread, numpy, stream
+import propulsion, landmap, collections, time, thread, numpy, stream, core
 class Robot():
     '''
         classe qui rassemble l'ensemble des modules du robot
@@ -20,9 +20,9 @@ class Robot():
         self.vue = Vision( self.config, self.board )
         self.land = landmap.LandMap()
         self.accel = propulsion.Accel( self.config )
-        self.pile = collections.deque()
+        self.pile_vision = core.Core()
         #self.pilevar = collections.deque()
-        self.pile_resultat = collections.deque()
+        self.pile_move = core.Core()
         self.running = False
         self.orientation = 0.0
         self.x = 0.0
@@ -40,30 +40,15 @@ class Robot():
     def start_httpd( self ):
         thread.start_new_thread( self.stream.serve_forever, () )
 
-    def stop_httpd( self ):
-        thread.exit()
-
-    def add_to_pile( self, exe, var=None ):
-        objexe = ( exe, var )
-        self.pile.append( objexe )
-        #self.pilevar.append( var )
-
-    def __exec_next__( self ):
-        exe, var = self.pile.popleft()
-        if var == None:
-            self.pile_resultat.append( exe() )
-        else:
-            self.pile_resultat.append( exe( *var ) )
-
     def coeur( self ):
         '''
             coeur se compose de differente pile avec different priorite
         '''
         while self.running:
-            if self.pile.__len__() <= 0:
+            if self.pile_vision.__len__() <= 0:
                 time.sleep( 0.1 )
             else:
-                self.__exec_next__()
+                self.pile_vision.exec_next()
                 #print self.pile_resultat.popleft()
             #thread.start_new_thread(gcode.get(ref[0],nullcomm),(ref[1:],))
 
