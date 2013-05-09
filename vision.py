@@ -6,7 +6,6 @@ import pygame.surfarray as surfarray
 import pygame.transform as transform
 import numpy
 from math import *
-
 #===============================================================================
 # Vision
 #===============================================================================
