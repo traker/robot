@@ -245,7 +245,6 @@ class Tourelle():
             else:
                 arrv = numpy.arange( vert, self.motVertical.get_etat() )
                 arrv = arrv[::-1]
-
             ratio = float( diffrot ) / float( arrv.size )
             index = arrv.size - 1
             if self.motHorizontal.get_etat() == hori :
