@@ -14,7 +14,6 @@ class Vision():
 	'''
 		class permetant de traiter differente information sur la vision du robot
 	'''
-	#cam = Camera(ConfigParser objet)
 	def __init__( self, config, board ):
 		'''
 		@param board: objet pyfirmata
