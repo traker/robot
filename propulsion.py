@@ -207,20 +207,16 @@ class Tourelle():
         flag_h = 0
         flag_v = 0
         index = 0
-
         if hori <= self.motHorizontal.get_etat(): flag_h = 0
         else: flag_h = 1
         if vert <= self.motVertical.get_etat(): flag_v = 0
         else: flag_v = 1
-
         waitrottmp = self.motHorizontal.get_etat() - hori
         waithbtmp = self.motVertical.get_etat() - vert
         diffrot = abs( waitrottmp )
         diffhb = abs( waithbtmp )
-
         arrh = numpy.array( [] )
         arrv = numpy.array( [] )
-
         if diffrot >= diffhb:
             if self.motHorizontal.get_etat() == hori :
                 #print "egal"
