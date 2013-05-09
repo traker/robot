@@ -7,6 +7,9 @@ import pygame.transform as transform
 import numpy
 from math import *
 
+#===============================================================================
+# Vision
+#===============================================================================
 class Vision():
 	'''
 		class permetant de traiter differente information sur la vision du robot

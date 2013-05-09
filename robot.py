@@ -1,6 +1,9 @@
 import ConfigParser, pyfirmata
 from vision import Vision
 import propulsion, landmap, collections, time, thread, numpy, stream, core
+#===============================================================================
+# Robot
+#===============================================================================
 class Robot():
     '''
         classe qui rassemble l'ensemble des modules du robot
@@ -45,8 +48,6 @@ class Robot():
                 time.sleep( 0.1 )
             else:
                 self.pile_move.exec_next()
-                #print self.pile_resultat.popleft()
-            #thread.start_new_thread(gcode.get(ref[0],nullcomm),(ref[1:],))
 
     def __cerveau__( self ):
         '''
@@ -57,8 +58,6 @@ class Robot():
                 time.sleep( 0.1 )
             else:
                 self.pile_vision.exec_next()
-                #print self.pile_resultat.popleft()
-            #thread.start_new_thread(gcode.get(ref[0],nullcomm),(ref[1:],))
 
     def balayage( self, depart , arrive , pas=1 ):
         if depart <= arrive :

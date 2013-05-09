@@ -9,9 +9,12 @@ import pyfirmata, time
 import ConfigParser, numpy
 import accelerometer
 import commands
-#-------------
+
+#===============================================================================
+# Accel
+#===============================================================================
 class Accel():
-#-------------
+
     '''
         renvoi differente information du module accelerometre.
         configuration du module:
@@ -63,6 +66,9 @@ class Accel():
          commands.getstatusoutput( 'i2c 58 wb 22 1' )
 
 
+#===============================================================================
+# Moteur
+#===============================================================================
 class Moteur():
     '''
         objet pernettant de manipuler un servo
@@ -119,6 +125,9 @@ class Moteur():
     def reset_compteur( self ):
         self.compteur = 0
 
+#===============================================================================
+# Propulsion
+#===============================================================================
 class Propulsion():
     '''
         class permettant de gerer la propusion du robot
@@ -168,6 +177,9 @@ class Propulsion():
         self.motGauche.reset_compteur()
         self.motDroit.reset_compteur()
 
+#===============================================================================
+# Tourelle
+#===============================================================================
 class Tourelle():
     '''
         class permetant de faire fonctionner la tourelle

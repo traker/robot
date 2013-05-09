@@ -5,6 +5,9 @@ import collections, sys
 
 MOVEMENT_COST = 10
 
+#===============================================================================
+# Square
+#===============================================================================
 class Square( object ):
     '''
         represente un carre dans une grille
@@ -42,6 +45,9 @@ class Square( object ):
         '''
         self.walkable = bool
 
+#===============================================================================
+# Maze
+#===============================================================================
 class Maze( object ):
     '''
         represente une grille constituer de carre
@@ -164,6 +170,9 @@ class Maze( object ):
         return Maze( squares )
 
 
+#===============================================================================
+# OpenList
+#===============================================================================
 class OpenList( object ):
     squares = set
     order = list

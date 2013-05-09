@@ -2,6 +2,9 @@
 import astar, numpy
 
 
+#===============================================================================
+# LandMap
+#===============================================================================
 class LandMap():
     """
         module contenant les information de position du robot

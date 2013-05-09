@@ -8,6 +8,9 @@ import cv
 import re
 
 cameraQuality = 75
+#===============================================================================
+# MyHandler
+#===============================================================================
 class MyHandler( BaseHTTPServer.BaseHTTPRequestHandler ):
     def do_GET( self ):
         global cameraQuality
@@ -68,6 +71,9 @@ class MyHandler( BaseHTTPServer.BaseHTTPRequestHandler ):
         except :
             pass
 
+#===============================================================================
+# HTTPServer
+#===============================================================================
 class HTTPServer( SocketServer.ThreadingMixIn, BaseHTTPServer.HTTPServer ):
     """Handle requests in a separate thread."""
     def __init__( self, server_address, img ):
