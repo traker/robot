@@ -130,7 +130,7 @@ class Vision():
 	def __lazer_filter__( self ):
 		self.__capture_im__()
 		hsv_image = cv.CreateImage( self.size, 8, 3 )
-		cv.cvCvtColor( self.image_brut, hsv_image, cv.CV_BGR2HSV )
+		cv.CvtColor( self.image_brut, hsv_image, cv.CV_BGR2HSV )
 		h_img = cv.CreateImage( self.size, 8, 1 )
 		s_img = cv.CreateImage( self.size, 8, 1 )
 		v_img = cv.CreateImage( self.size, 8, 1 )
