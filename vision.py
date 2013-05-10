@@ -133,9 +133,9 @@ class Vision():
 		s_img = cv.CreateImage( self.size, 8, 1 )
 		v_img = cv.CreateImage( self.size, 8, 1 )
 		cv.cvSplit( self.image_brut, h_img, s_img, v_img, None )
-     	cv.SaveImage( "imgh.jpg", h_img )
-     	cv.SaveImage( "imgs.jpg", s_img )
-     	cv.SaveImage( "imgv.jpg", v_img )
+		cv.SaveImage( "imgh.jpg", h_img )
+		cv.SaveImage( "imgs.jpg", s_img )
+		cv.SaveImage( "imgv.jpg", v_img )
 
 	def __laplace_filter__( self ):
 		'''
