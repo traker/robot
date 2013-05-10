@@ -115,6 +115,7 @@ class Vision():
 			tranforme l'image capturer en une image filtre puis la stocke dans self.matriximg
 		'''
 		self.__capture_im__()
+		self.__lazer_filter__( self )
 		dilatedimg = cv.CloneImage( self.image_brut )
 		cv.Dilate( self.image_brut, dilatedimg )
 		blurim = cv.CloneImage( dilatedimg )
@@ -128,7 +129,7 @@ class Vision():
 		self.matriximg = numpy.asarray( matpygame )
 
 	def __lazer_filter__( self ):
-		self.__capture_im__()
+		#self.__capture_im__()
 		hsv_image = cv.CreateImage( self.size, 8, 3 )
 		cv.CvtColor( self.image_brut, hsv_image, cv.CV_BGR2HSV )
 		h_img = cv.CreateImage( self.size, 8, 1 )
