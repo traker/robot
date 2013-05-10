@@ -130,9 +130,9 @@ class Vision():
 	def __lazer_filter__( self ):
 		self.__capture_im__()
 		h_img = cv.CreateImage( self.size, 8, 1 )
-    	s_img = cv.CreateImage( self.size, 8, 1 )
-     	v_img = cv.CreateImage( self.size, 8, 1 )
-     	cv.cvSplit( self.image_brut, h_img, s_img, v_img, None )
+		s_img = cv.CreateImage( self.size, 8, 1 )
+		v_img = cv.CreateImage( self.size, 8, 1 )
+		cv.cvSplit( self.image_brut, h_img, s_img, v_img, None )
      	cv.SaveImage( "imgh.jpg", h_img )
      	cv.SaveImage( "imgs.jpg", s_img )
      	cv.SaveImage( "imgv.jpg", v_img )
