@@ -140,7 +140,7 @@ class Vision():
 		s_img = cv.CreateImage( self.size, 8, 1 )
 		v_img = cv.CreateImage( self.size, 8, 1 )
 		cv.Split( hsv_image, h_img, s_img, v_img, None )
-		cv.SaveImage( "img.jpg", hsv_img )
+		cv.SaveImage( "img.jpg", hsv_image )
 		cv.SaveImage( "imgh.jpg", h_img )
 		cv.SaveImage( "imgs.jpg", s_img )
 		cv.SaveImage( "imgv.jpg", v_img )
