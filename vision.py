@@ -127,6 +127,15 @@ class Vision():
 		matpygame = surfarray.array2d( self.__cvimage_to_pygame__( self.bitimage ) )
 		self.matriximg = numpy.asarray( matpygame )
 
+	def __lazer_filter__( self ):
+		self.__capture_im__()
+		h_img = cv.cvCreateImage( cv.cvSize( cam_width, cam_height ), 8, 1 )
+    	s_img = cv.cvCreateImage( cv.cvSize( cam_width, cam_height ), 8, 1 )
+     	v_img = cv.cvCreateImage( cv.cvSize( cam_width, cam_height ), 8, 1 )
+     	cv.cvSplit( self.image_brut, h_img, s_img, v_img, None )
+     	cv.SaveImage( "imgh.jpg", h_img )
+     	cv.SaveImage( "imgs.jpg", s_img )
+     	cv.SaveImage( "imgv.jpg", v_img )
 
 	def __laplace_filter__( self ):
 		'''
