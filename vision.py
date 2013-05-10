@@ -127,7 +127,7 @@ class Vision():
 		cv.Copy( self.bitimage, self.image_actuel )
 		self.matriximg = self.__im_to_numpy_arr( self.bitimage )
 
-	def __im_to_numpy_arr( self, img ):
+	def __im_to_numpy_arr__( self, img ):
 		matpygame = surfarray.array2d( self.__cvimage_to_pygame__( img ) )
 		return numpy.asarray( matpygame )
 
