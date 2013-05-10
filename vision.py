@@ -115,7 +115,7 @@ class Vision():
 			tranforme l'image capturer en une image filtre puis la stocke dans self.matriximg
 		'''
 		self.__capture_im__()
-		self.__lazer_filter__( self )
+		self.__lazer_filter__()
 		dilatedimg = cv.CloneImage( self.image_brut )
 		cv.Dilate( self.image_brut, dilatedimg )
 		blurim = cv.CloneImage( dilatedimg )
