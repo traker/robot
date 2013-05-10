@@ -125,8 +125,11 @@ class Vision():
 		cv.CvtColor( blurim, imgg, cv.CV_RGB2GRAY )
 		cv.Threshold( imgg, self.bitimage, self.vmin, self.vmax, cv.CV_THRESH_BINARY )
 		cv.Copy( self.bitimage, self.image_actuel )
-		matpygame = surfarray.array2d( self.__cvimage_to_pygame__( self.bitimage ) )
-		self.matriximg = numpy.asarray( matpygame )
+		self.matriximg = self.__im_to_numpy_arr( self.bitimage )
+
+	def __im_to_numpy_arr( self, img ):
+		matpygame = surfarray.array2d( self.__cvimage_to_pygame__( img ) )
+		return numpy.asarray( matpygame )
 
 	def __lazer_filter__( self ):
 		#self.__capture_im__()
