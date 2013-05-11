@@ -17,7 +17,7 @@ class Core():
         self.pile_resultat = {}
         self.nid = 0
 
-    def add_to_pile( self, exe, var=None ):
+    def append( self, exe, var=None ):
         self.nid += 1
         objexe = Objexe( self.nid, exe, var )
         self.pile.append( objexe )
@@ -30,8 +30,11 @@ class Core():
         else:
             self.pile_resultat[objexe.id] = objexe.exe( *objexe.var )
 
-    def get_result( self, id ):
-        result = self.pile_resultat[id]
-        del self.pile_resultat[id]
+    def pop_result( self, id ):
+        if id in self.pile_resultat:
+            result = self.pile_resultat[id]
+            del self.pile_resultat[id]
+        else:
+            result = None
         return result
 
