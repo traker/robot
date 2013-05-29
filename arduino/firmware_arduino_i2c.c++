@@ -41,79 +41,108 @@
  * 				[10]	= position laser on/off
  * 			receiveEvent(int bytesReceived):
  * 			-I2C_Command
- * 				[0]		= 	bit 0 - propulsion on/off
- * 							bit 1 - propulsion avant/arriere
- * 							bit 2 -	tourner on/off
- * 							bit 3 -	tourner gauche/droite
- * 							bit 4 - laser on/off
- * 							bit 5 -	compteur raz
- * 							bit 6 -
- * 							bit 7 -
- * 				[1]		= position x
- * 				[2]		= position y
+ * 				[0]		= 	bit 0 - execute tourelle
+ * 							bit 1 - }
+ * 							bit 2 - }propulsion avant/arriere
+ * 							bit 3 -	tourner on/off
+ * 							bit 4 -	tourner gauche/droite
+ * 							bit 5 - laser on/off
+ * 							bit 6 -	compteur raz
+ * 				[1]		=	bit 0 - demande compteur gauche
+ * 							bit 1 - demande compteur droite
+
+ * 				[2]		= position x
+ * 				[3]		= position y
  * 				
  */
 #include <Servo.h>
 #include <Wire.h>
-#define	SLAVE_ADDRESS           0x29  //slave address,any number from 0x01 to 0x7F
+#define RAF			0x00
+
+#define TOUREXE		0x01
+#define PROPAR		0x02
+#define	PROPAV		0x06
+#define	TOURNG		0x08
+#define TOURND		0x18
+#define LASERON		0x20
+#define RAZ			0x40
+
+#define DCG			0x01
+#define DCD			0x02
+
 #define UNIT_MS	100
 //definition des pins
 #define	MOT_G		3	//moteur de propultion gauche
-#define	MOT_D		4	//moteur de propultion droite
-#define SRV_X		5	//servo tourelle rotation sur l'axe X
-#define SRV_Y		6	//servo tourelle rotation sur l'axe Y
-#define LAZ			7	//laser
+#define	MOT_D		6	//moteur de propultion droite
+#define SRV_X		4	//servo tourelle rotation sur l'axe X
+#define SRV_Y		5	//servo tourelle rotation sur l'axe Y
+#define LAZ			52	//laser
 
 //creation des objet servo
 Servo motG;
 Servo motD;
 Servo tourX;
 Servo tourY;
-//declaration tableau de byte
-typedef struct Data_t{
-	uint32_t comptG;
-	uint32_t comptD;
-	byte x;
-	byte y;
-	byte laser;
-};
-typedef union I2C_Packet_t{
-	Data_t data;
-	byte I2CPacket[sizeof(Data_t)];
-};
 
-#define PACKET_SIZE sizeof(Data_t)
-I2C_Packet_t leakinfo; 
-// leakinfo.data.comptG = valeur
+uint32_t compteur_g;
+uint32_t compteur_d;
+//int8_t axe_x;
+//int8_t axe_y;
+bool laser_flag;
+
+// déclaration des registres
+byte regs[4];
+int regIndex = 0; // Registre à lire ou à écrire.
+
+// copie de la dernière instruction d execution écrite dans
+// le registre reg0 pour le traitement asynchrone de
+// requestEvent (demande de bytes)
+byte lastExecReq = 0x00;
 
 void setup()
 {
+	// Initialisation des registres
+	regs[0] = 0x00; // reg0 = registre d'exécution
+	// valeur 0x00 = NOP - No Operation = rien à faire
+	regs[1] = 0x00; // valeur 0x00 = NOP - No Operation = rien à faire
+	regs[2] = 0x00;
+	regs[3] = 0x00;
+
 	//propulsion
 	motG.attach(MOT_G);
 	pinMode(MOT_G, OUTPUT);
 	motG.write(90);
-	leakinfo.data.comptG = 0;
+	compteur_g = 0;
 	motD.attach(MOT_D);
 	pinMode(MOT_D, OUTPUT);
 	motD.write(90);
-	leakinfo.data.comptD = 0;
+	compteur_d = 0;
 	//tourelle
 	tourX.attach(SRV_X);
 	pinMode(SRV_X, OUTPUT);
 	tourX.write(90);
-	leakinfo.data.x = 90;
+	//axe_x = 90;
 	tourY.attach(SRV_Y);
 	pinMode(SRV_Y, OUTPUT);
 	tourY.write(90);
-	leakinfo.data.y = 90;
+	//axe_y = 90;
 	//laser
 	pinMode(LAZ, OUTPUT);
-	bitWrite(leakinfo.data.laser,0,false);
+	laser_flag = false;
 
-	//i2c
-	Wire.begin(SLAVE_ADDRESS); 
-	Wire.onRequest(requestEvent);
+	// Joindre le Bus I2C avec adresse #4
+	Wire.begin(0x20);
+	// enregistrer l'événement
+	//    Lorsque des données sont écrites par le maitre et reçue par l'esclave
 	Wire.onReceive(receiveEvent);
+	// enregistrer l'événement
+	//    Lorsque le Maitre demande de lecture de bytes
+	Wire.onRequest(requestEvent);
+
+	// Démarrer une communication série
+	Serial.begin(19200);
+	Serial.println( F("Bus I2C pret") );
+
 }
 
 void marche(bool sens)
@@ -121,25 +150,19 @@ void marche(bool sens)
 	if(sens){
 		motG.write(180);
 		motD.write(0);
-		leakinfo.data.comptG += 1;
-		leakinfo.data.comptD += 1;
+		compteur_g += 1;
+		compteur_d += 1;
 	}
 	else
 	{
 		motG.write(0);
 		motD.write(180);
-		leakinfo.data.comptG -= 1;
-		leakinfo.data.comptD -= 1;
+		compteur_g -= 1;
+		compteur_d -= 1;
 	}
 	delay(UNIT_MS);
 	motG.write(90);
 	motD.write(90);
-}
-
-void raz()
-{
-	leakinfo.data.comptG = 0;
-	leakinfo.data.comptD = 0;
 }
 
 void tourner(bool sens)
@@ -147,72 +170,158 @@ void tourner(bool sens)
 	if(sens){
 		motG.write(180);
 		motD.write(180);
-		leakinfo.data.comptG += 1;
-		leakinfo.data.comptD -= 1;
+		compteur_g += 1;
+		compteur_d -= 1;
 	}
 	else
 	{
 		motG.write(0);
 		motD.write(0);
-		leakinfo.data.comptG -= 1;
-		leakinfo.data.comptD += 1;
+		compteur_g -= 1;
+		compteur_d += 1;
 	}
 	delay(UNIT_MS);
 	motG.write(90);
 	motD.write(90);
 }
 
-void regarde(int axe_x, int axe_y )
-{
-	tourX.write(axe_x);
-	leakinfo.data.x = axe_x;
-	tourY.write(axe_y);
-	leakinfo.data.y = axe_y;
-	//bool flag_x = false;
-	//bool flag_y = false;
-	//int index = 0;
-	//if(axe_x <= leakinfo.data.x){ flag_x = false; }else{ flag_x = true; }
-	//if(axe_y <= leakinfo.data.y){ flag_y = false; }else{ flag_y = true; }
-	//int diff_x, diff_y;
-	//diff_x = abs(leakinfo.data.x - axe_x);
-	//diff_y = abs(leakinfo.data.y - axe_y);
-	//int arr_x[0];
-	//int arr_y[0];
-	//if(diff_x >= diff_y){
-	//	int arr_x[diff_x];
-	//	int arr_y[diff_x];
-	//	if(leakinfo.data.x == axe_x){	}else if(flag_x == true){	}else{	}
-	//	if(leakinfo.data.y == axe_y){	}else if(flag_y == true){	}else{	}
-	//}
-	//else
-	//{
-	//}
-}
-
-void laser(bool np)
-{
-	digitalWrite(LAZ, np);
-	bitWrite(leakinfo.data.laser,0,np);
-
-}
-
 void loop()
 {
+	// Si NOP alors rien à faire
+
+	// Exécution de l'opération
+	/* Serial.println( F("--- Traitement Requete ---") );
+  Serial.print( F("reg0 = ") );
+  Serial.println( regs[0], DEC );
+  Serial.print( F("reg1 = ") );
+  Serial.println( regs[1], DEC );
+  Serial.print( F("reg2 = ") );
+  Serial.println( regs[2], DEC );
+	 */
+	if(regs[0] != 0){
+		if(regs[0] & TOUREXE == TOUREXE){/* execute tourelle au position regs[2,3] */
+			tourX.write(regs[2]);
+			tourY.write(regs[3]);
+			Serial.print( F("PROPAV = ") );
+		}
+		if((regs[0] & PROPAV) == PROPAV ){/* avance */
+			Serial.println( F("PROPAV ") );
+			marche(true);
+		}else if((regs[0] & PROPAR) == PROPAR){/* recul */
+			Serial.println( F("PROPAR ") );
+			marche(false);
+		}
+		if(regs[0] & TOURND == TOURND ){/* tourne a droite*/
+			tourner(true);
+		}else if(regs[0] & TOURNG){/* ttourne a gauche */
+			tourner(false);
+		}
+		if(regs[0] & LASERON == LASERON){/* verifie etat */
+			if(!laser_flag){/* allume le laser */
+				laser_flag=true;digitalWrite(LAZ, true);
+			}
+		}else{/* verifie etat */
+			if(laser_flag){/* eteind le laser */
+				laser_flag=false;digitalWrite(LAZ, false);
+			}
+		}
+		if(regs[0] & RAZ == RAZ){/* remet a zero les compteurs */
+			compteur_d = 0;
+			compteur_g = 0;}
+	}else if(regs[1] != 0){
+		switch( regs[1] ){
+		case DCG : /* demande compteur gauche */
+			break;
+		case DCD : /* demande compteur droite */
+			break;
+		}
+	}
+	// reset to NOP
+	regs[0] = 0x00;
+	regs[1] = 0x00;
 }
 
+// Fonction qui est exécutée lorsque des données sont envoyées par le Maître.
+// Cette fonction est enregistrée comme une événement ("event" en anglais), voir la fonction setup()
+void receiveEvent(int howMany)
+{
+	int byteCounter = 0;
+
+	// Pour faire du debug... mais attention cela peut planter
+	//    la réception!
+	//
+	//Serial.println(F("---- LECTURE ---"));
+	//Serial.print(F("Numbre de Bytes: "));
+	//Serial.println( howMany );
+
+	// Lire tous les octets sauf le dernier
+	while( byteCounter < howMany )
+	{
+		// lecture de l'octet
+		byte b = Wire.read();
+		byteCounter += 1;
+
+		//Serial.println( b, DEC );
+
+		if( byteCounter == 1 ){   // Byte #1 = Numéro de registre
+			regIndex = b;
+		}
+		else {                    // Byte #2 = Valeur a stocker dans le registre
+			switch(regIndex) {
+			case 0:
+				regs[0] = b;
+				// maintenir une copie du dernier reg0 pour
+				// traitement d'une réponse via requestEvent (demande de byte)
+				break;
+			case 1:
+				regs[1] = b;
+				lastExecReq = b;
+				break;
+			case 2:
+				regs[2] = b;
+				break;
+			case 3:
+				regs[3] = b;
+				break;
+			}
+		}
+
+
+	} // fin WHILE
+}
+
+// Fonction est activé lorsque le Maitre fait une demande de lecture.
+//
 void requestEvent()
 {
-	Wire.write(leakinfo.I2CPacket, PACKET_SIZE);  
-}
+	// Deboggage - Activer les lignes suivantes peut perturber fortement
+	//    l'échange I2C... a utiliser avec circonspection.
+	//
+	//   Serial.print( "Lecture registre: " );
+	//   Serial.println( regIndex );
 
-void receiveEvent(int bytesReceived)
-{
-	byte comProp = Wire.read();
-	int tmp_x = Wire.read();
-	int tmp_y = Wire.read();
-	if(tmp_x != 0){regarde(tmp_x, tmp_y);}
-	if(bitRead(comProp, 0)){marche(bitRead(comProp,1));}
-	if(bitRead(comProp, 2)){tourner(bitRead(comProp,3));}
-	laser(bitRead(comProp,4));
-	if(bitRead(comProp,5)){raz();}
-}       
+	// Quel registre est-il lu???
+	switch( regIndex ){
+
+	case 0x00: // lecture registre 0
+		// la réponse depend de la dernière opération d'exécution demandée
+		//    par l'intermédiaire du registre d'exécution (reg 0x00).
+		switch( lastExecReq ) {
+		case 0x01: /* demande compteur gauche */
+			Wire.write( compteur_g );
+			break;
+
+		case 0x02: /* demande compteur droite */
+			Wire.write( compteur_d );
+			break;
+
+		default:
+			Wire.write( 0xFF ); // ecrire 255 = il y a un problème!
+		}
+		break;
+
+		default: // lecture autre registre
+			Wire.write( 0xFF ); // ecrire 255 = il y a un problème
+	}
+
+}
