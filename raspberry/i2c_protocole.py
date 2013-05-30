@@ -54,13 +54,13 @@ class I2c_arduino():
 
     def get_Compteur( self ):
         #compteur droite
-        self.i2c.write8( self.CMDC, self.DCD )
+        self.i2c.write8( self.CMDG, self.DCD )
         time.sleep( 0.020 )
         tmpDar = self.i2c.readList( self.CMDG, 4 )
         tmpD = self.__list_bytes_to_int__( tmpDar )
         time.sleep( 0.020 )
         #compteur gauche
-        self.i2c.write8( self.CMDC, self.DCG )
+        self.i2c.write8( self.CMDG, self.DCG )
         time.sleep( 0.020 )
         tmpGar = self.i2c.readList( self.CMDG, 4 )
         tmpG = self.__list_bytes_to_int__( tmpGar )
