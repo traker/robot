@@ -94,6 +94,8 @@ bool laser_flag;
 byte regs[4];
 int regIndex = 0; // Registre à lire ou à écrire.
 
+byte bytesend[4];
+
 // copie de la dernière instruction d execution écrite dans
 // le registre reg0 pour le traitement asynchrone de
 // requestEvent (demande de bytes)
@@ -231,8 +233,17 @@ void loop()
 	}else if(regs[1] != 0){
 		switch( regs[1] ){
 		case DCG : /* demande compteur gauche */
+                        compteur_g = -2543;
+			bytesend[0] = (compteur_g >> 0)  & 0xFF;
+			bytesend[1] = (compteur_g >> 8)  & 0xFF;
+			bytesend[2] = (compteur_g >> 16) & 0xFF;
+			bytesend[3] = (compteur_g >> 24) & 0xFF;
 			break;
 		case DCD : /* demande compteur droite */
+			bytesend[0] = (compteur_d >> 0)  & 0xFF;
+			bytesend[1] = (compteur_d >> 8)  & 0xFF;
+			bytesend[2] = (compteur_d >> 16) & 0xFF;
+			bytesend[3] = (compteur_d >> 24) & 0xFF;
 			break;
 		}
 	}
@@ -308,11 +319,11 @@ void requestEvent()
 		//    par l'intermédiaire du registre d'exécution (reg 0x00).
 		switch( lastExecReq ) {
 		case 0x01: /* demande compteur gauche */
-			Wire.write( compteur_g );
+			Wire.write( bytesend, 4 );
 			break;
 
 		case 0x02: /* demande compteur droite */
-			Wire.write( compteur_d );
+			Wire.write( bytesend, 4 );
 			break;
 
 		default:
