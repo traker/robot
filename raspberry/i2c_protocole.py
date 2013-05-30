@@ -33,25 +33,25 @@ class I2c_arduino():
     def avance( self, avar ):
         if( avar ):
             #self.i2c.write8( CMDG, PROPAV )
-            self.CMD + self.PROPAV
+            self.CMD += self.PROPAV
         else:
             #self.i2c.write8( CMDG, PROPAR )
-            self.CMD + self.PROPAR
+            self.CMD += self.PROPAR
 
     def tourne( self, dg ):
         if( dg ):
             #self.i2c.write8( CMDG, TOURND )
-            self.CMD + self.TOURND
+            self.CMD += self.TOURND
         else:
             #self.i2c.write8( CMDG, TOURNG )
-            self.CMD + self.TOURNG
+            self.CMD += self.TOURNG
 
     def laser( self, onoff ):
         if onoff:
             #self.i2c.write8( CMDG, LASERON )
-            self.CMD + self.LASERON
+            self.CMD += self.LASERON
     def raz( self ):
-        self.CMD + self.RAZ
+        self.CMD += self.RAZ
 
     def execute( self ):
         self.i2c.write8( self.CMDG, self.CMD )
