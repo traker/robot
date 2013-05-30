@@ -21,7 +21,7 @@ class I2c_arduino():
         self.i2c = Adafruit_I2C( 0x20 )
 
     def __list_bytes_to_int__( self, barray ):
-       return sum( barry[i] << ( i * 8 ) for i in range( 4 ) )
+       return sum( barray[i] << ( i * 8 ) for i in range( 4 ) )
 
     def regarde( self, x, y ):
         self.i2c.write8( self.CMDX, x )
