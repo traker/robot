@@ -61,14 +61,13 @@
 
 #define TOUREXE		0x01
 #define PROPAR		0x02
-#define	PROPAV		0x06
-#define	TOURNG		0x08
-#define TOURND		0x18
-#define LASERON		0x20
-#define RAZ			0x40
-
-#define DCG			0x01
-#define DCD			0x02
+#define	PROPAV		0x03
+#define	TOURNG		0x04
+#define TOURND		0x05
+#define LASERON		0x06
+#define RAZ			0x07
+#define DCG			0x08
+#define DCD			0x09
 
 #define UNIT_MS	100
 //definition des pins
@@ -91,7 +90,7 @@ uint32_t compteur_d;
 bool laser_flag;
 
 // déclaration des registres
-byte regs[4];
+byte regs[3];
 int regIndex = 0; // Registre à lire ou à écrire.
 
 byte bytesend[4];
@@ -108,7 +107,7 @@ void setup()
 	// valeur 0x00 = NOP - No Operation = rien à faire
 	regs[1] = 0x00; // valeur 0x00 = NOP - No Operation = rien à faire
 	regs[2] = 0x00;
-	regs[3] = 0x00;
+
 
 	//propulsion
 	motG.attach(MOT_G);
@@ -200,40 +199,32 @@ void loop()
   Serial.print( F("reg2 = ") );
   Serial.println( regs[2], DEC );
 	 */
-	if(regs[0] != 0){
-		if(regs[0] & TOUREXE == TOUREXE){/* execute tourelle au position regs[2,3] */
-			tourX.write(regs[2]);
-			tourY.write(regs[3]);
-			Serial.print( F("PROPAV = ") );
-		}
-		if((regs[0] & PROPAV) == PROPAV ){/* avance */
-			Serial.println( F("PROPAV ") );
+ if(regs[0] != 0){
+		switch( regs[0] ){
+		case TOUREXE:
+			tourX.write(regs[1]);
+			tourY.write(regs[2]);
+			break;
+		case PROPAV:
 			marche(true);
-		}else if((regs[0] & PROPAR) == PROPAR){/* recul */
-			Serial.println( F("PROPAR ") );
+			break;
+		case PROPAR:
 			marche(false);
-		}
-		if(regs[0] & TOURND == TOURND ){/* tourne a droite*/
+			break;
+		case TOURND:
 			tourner(true);
-		}else if(regs[0] & TOURNG){/* ttourne a gauche */
+			break;
+		case TOURNG:
 			tourner(false);
-		}
-		if(regs[0] & LASERON == LASERON){/* verifie etat */
-			if(!laser_flag){/* allume le laser */
-				laser_flag=true;digitalWrite(LAZ, true);
-			}
-		}else{/* verifie etat */
-			if(laser_flag){/* eteind le laser */
-				laser_flag=false;digitalWrite(LAZ, false);
-			}
-		}
-		if(regs[0] & RAZ == RAZ){/* remet a zero les compteurs */
+			break;
+		case LASERON:
+			digitalWrite(LAZ, true);
+			break;
+		case RAZ:
 			compteur_d = 0;
-			compteur_g = 0;}
-	}else if(regs[1] != 0){
-		switch( regs[1] ){
+			compteur_g = 0;
+			break;
 		case DCG : /* demande compteur gauche */
-                        compteur_g = -2543;
 			bytesend[0] = (compteur_g >> 0)  & 0xFF;
 			bytesend[1] = (compteur_g >> 8)  & 0xFF;
 			bytesend[2] = (compteur_g >> 16) & 0xFF;
@@ -249,7 +240,6 @@ void loop()
 	}
 	// reset to NOP
 	regs[0] = 0x00;
-	regs[1] = 0x00;
 }
 
 // Fonction qui est exécutée lorsque des données sont envoyées par le Maître.
@@ -290,9 +280,6 @@ void receiveEvent(int howMany)
 				break;
 			case 2:
 				regs[2] = b;
-				break;
-			case 3:
-				regs[3] = b;
 				break;
 			}
 		}
