@@ -273,10 +273,10 @@ void receiveEvent(int howMany)
 				regs[0] = b;
 				// maintenir une copie du dernier reg0 pour
 				// traitement d'une réponse via requestEvent (demande de byte)
+				lastExecReq = b;
 				break;
 			case 1:
 				regs[1] = b;
-				lastExecReq = b;
 				break;
 			case 2:
 				regs[2] = b;
@@ -305,11 +305,11 @@ void requestEvent()
 		// la réponse depend de la dernière opération d'exécution demandée
 		//    par l'intermédiaire du registre d'exécution (reg 0x00).
 		switch( lastExecReq ) {
-		case 0x01: /* demande compteur gauche */
+		case DCG: /* demande compteur gauche */
 			Wire.write( bytesend, 4 );
 			break;
 
-		case 0x02: /* demande compteur droite */
+		case DCD: /* demande compteur droite */
 			Wire.write( bytesend, 4 );
 			break;
 
