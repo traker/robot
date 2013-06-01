@@ -218,7 +218,14 @@ void loop()
 			tourner(false);
 			break;
 		case LASERON:
-			digitalWrite(LAZ, true);
+			if(!laser_flag){
+				digitalWrite(LAZ, true);
+				laser_flag = true;
+			}else{
+				digitalWrite(LAZ, false);
+				laser_flag = false;
+			}
+
 			break;
 		case RAZ:
 			compteur_d = 0;
