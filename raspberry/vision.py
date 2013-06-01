@@ -14,7 +14,7 @@ class Vision():
 	'''
 		class permetant de traiter differente information sur la vision du robot
 	'''
-	def __init__( self, config, board ):
+	def __init__( self, config, bus ):
 		'''
 		@param board: objet pyfirmata
 		@type board: pyfirmata
@@ -35,8 +35,7 @@ class Vision():
 		self.vmax = config.getint( 'Camera', 'tresholdmax' ) #valeur maximum treshold
 		self.cam = cv2.VideoCapture( self.device )
 		# configuration pour le lrf
-		self.laser_pin = config.getint( 'Lrf', 'pin_laser' )
-		self.laser = board.get_pin( 'd:' + str( self.laser_pin ) + ':o' )
+		self.laser = bus.laser
 		self.laser_pos = False
 		self.listplage = ( ( 144, 128 ), ( 128, 96 ), ( 96, 48 ), ( 64, 48 ), ( 48, 24 ), ( 24, 0 ) )
 		self.plage_rech = ( 0, 0 ) #nby, nbx
@@ -196,7 +195,7 @@ class Vision():
 	def set_laser( self, _bool_ ):
 		time.sleep( 0.05 )
 		self.laser_pos = _bool_
-		self.laser.write( _bool_ )
+		self.laser()
 		time.sleep( 0.05 )
 
 	def get_capture( self ):
