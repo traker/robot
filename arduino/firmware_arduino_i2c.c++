@@ -58,7 +58,6 @@
 #include <Servo.h>
 #include <Wire.h>
 #define RAF			0x00
-
 #define TOUREXE		0x01
 #define PROPAR		0x02
 #define	PROPAV		0x03
@@ -68,6 +67,7 @@
 #define RAZ			0x07
 #define DCG			0x08
 #define DCD			0x09
+#define NIVBATT		0x10
 
 #define UNIT_MS	100
 //definition des pins
@@ -76,6 +76,7 @@
 #define SRV_X		4	//servo tourelle rotation sur l'axe X
 #define SRV_Y		5	//servo tourelle rotation sur l'axe Y
 #define LAZ			52	//laser
+
 
 //creation des objet servo
 Servo motG;
@@ -100,8 +101,16 @@ byte bytesend[4];
 // requestEvent (demande de bytes)
 byte lastExecReq = 0x00;
 
+/* Coefficient diviseur du pont de résistance */
+const float coeff_division = 6.92;
+union u_tag {
+  byte b[4];
+  float fval;
+} u;
+
 void setup()
 {
+	analogReference(INTERNAL2V56);
 	// Initialisation des registres
 	regs[0] = 0x00; // reg0 = registre d'exécution
 	// valeur 0x00 = NOP - No Operation = rien à faire
@@ -199,6 +208,8 @@ void loop()
   Serial.print( F("reg2 = ") );
   Serial.println( regs[2], DEC );
 	 */
+
+
  if(regs[0] != 0){
 		switch( regs[0] ){
 		case TOUREXE:
@@ -242,6 +253,10 @@ void loop()
 			bytesend[1] = (compteur_d >> 8)  & 0xFF;
 			bytesend[2] = (compteur_d >> 16) & 0xFF;
 			bytesend[3] = (compteur_d >> 24) & 0xFF;
+			break;
+		case NIVBATT: /* demande niveau batterie*/
+			 unsigned int raw_bat = analogRead(A0);
+			 u.fval = ((raw_bat * (2.56 / 1023)) * coeff_division);
 			break;
 		}
 	}
@@ -319,7 +334,8 @@ void requestEvent()
 		case DCD: /* demande compteur droite */
 			Wire.write( bytesend, 4 );
 			break;
-
+		case NIVBATT:
+			Wire.write(u.b,4);
 		default:
 			Wire.write( 0xFF ); // ecrire 255 = il y a un problème!
 		}
