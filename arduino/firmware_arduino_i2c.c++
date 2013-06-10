@@ -102,7 +102,7 @@ byte bytesend[4];
 byte lastExecReq = 0x00;
 
 /* Coefficient diviseur du pont de résistance */
-const float coeff_division = 6.92;
+const float coeff_division = 3.28;
 union u_tag {
   byte b[4];
   float fval;
@@ -110,7 +110,7 @@ union u_tag {
 
 void setup()
 {
-	analogReference(INTERNAL2V56);
+	//analogReference(INTERNAL2V56);
 	// Initialisation des registres
 	regs[0] = 0x00; // reg0 = registre d'exécution
 	// valeur 0x00 = NOP - No Operation = rien à faire
@@ -256,7 +256,7 @@ void loop()
 			break;
 		case NIVBATT: /* demande niveau batterie*/
 			 unsigned int raw_bat = analogRead(A0);
-			 u.fval = ((raw_bat * (2.56 / 1023)) * coeff_division);
+			 u.fval = ((raw_bat * (5.0 / 1023)) * coeff_division);
 			break;
 		}
 	}
@@ -336,6 +336,7 @@ void requestEvent()
 			break;
 		case NIVBATT:
 			Wire.write(u.b,4);
+			break;
 		default:
 			Wire.write( 0xFF ); // ecrire 255 = il y a un problème!
 		}

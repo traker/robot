@@ -11,6 +11,7 @@ class I2c_arduino():
     RAZ = 0x07
     DCG = 0x08
     DCD = 0x09
+    NIVBATT = 0x10
 
     CMDX = 0x01
     CMDY = 0x02
@@ -67,5 +68,10 @@ class I2c_arduino():
         time.sleep( 0.020 )
         return tmpD, tmpG
 
-
+    def get_batt( self ):
+        self.i2c.write8( self.CMDG, self.NIVBATT )
+        time.sleep( 0.020 )
+        tmp = self.i2c.readList( self.CMDG, 4 )
+        cha = chr( tmp[0] ) + chr( tmp[1] ) + chr( tmp[2] ) + chr( tmp[3] )
+        struct.unpack( 'f', cha )
 
