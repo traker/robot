@@ -57,6 +57,7 @@
  */
 #include <Servo.h>
 #include <Wire.h>
+#include "StackArray.h"
 #define RAF			0x00
 #define TOUREXE		0x01
 #define PROPAR		0x02
@@ -77,7 +78,8 @@
 #define SRV_Y		5	//servo tourelle rotation sur l'axe Y
 #define LAZ			52	//laser
 
-
+// pile d'execution
+StackArray <byte>  pile;
 //creation des objet servo
 Servo motG;
 Servo motD;
@@ -209,7 +211,9 @@ void loop()
   Serial.println( regs[2], DEC );
 	 */
 
-
+  if(!pile.isEmpty()){
+    regs[0] = pile.pop();
+  }
  if(regs[0] != 0){
 		switch( regs[0] ){
 		case TOUREXE:
@@ -296,6 +300,7 @@ void receiveEvent(int howMany)
 				// maintenir une copie du dernier reg0 pour
 				// traitement d'une réponse via requestEvent (demande de byte)
 				lastExecReq = b;
+                                pile.push(b);
 				break;
 			case 1:
 				regs[1] = b;

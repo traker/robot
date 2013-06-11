@@ -56,15 +56,17 @@ class I2c_arduino():
         self.i2c.write8( self.CMDG, self.DCD )
         time.sleep( 0.020 )
         tmpDar = self.i2c.readList( self.CMDG, 4 )
-        tmpD = self.__list_bytes_to_int__( tmpDar )
+        tmpD = chr( tmpDar[0] ) + chr( tmpDar[1] ) + chr( tmpDar[2] ) + chr( tmpDar[3] )
+        #tmpD = self.__list_bytes_to_int__( tmpDar )
         time.sleep( 0.020 )
         #compteur gauche
         self.i2c.write8( self.CMDG, self.DCG )
         time.sleep( 0.020 )
         tmpGar = self.i2c.readList( self.CMDG, 4 )
-        tmpG = self.__list_bytes_to_int__( tmpGar )
+        tmpG = chr( tmpGar[0] ) + chr( tmpGar[1] ) + chr( tmpGar[2] ) + chr( tmpGar[3] )
+        #tmpG = self.__list_bytes_to_int__( tmpGar )
         time.sleep( 0.020 )
-        return tmpD, tmpG
+        return struct.unpack( 'I', tmpD ), struct.unpack( 'I', tmpG )
 
     def get_batt( self ):
         self.i2c.write8( self.CMDG, self.NIVBATT )
