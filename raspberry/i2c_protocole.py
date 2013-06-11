@@ -1,5 +1,5 @@
 from Adafruit_I2C import Adafruit_I2C
-import time
+import time, struct
 class I2c_arduino():
     CMDG = 0x00
     TOUREXE = 0x01
