@@ -296,11 +296,11 @@ void receiveEvent(int howMany)
 		else {                    // Byte #2 = Valeur a stocker dans le registre
 			switch(regIndex) {
 			case 0:
-				regs[0] = b;
+				//regs[0] = b;
 				// maintenir une copie du dernier reg0 pour
 				// traitement d'une réponse via requestEvent (demande de byte)
 				lastExecReq = b;
-                                pile.push(b);
+                pile.push(b);
 				break;
 			case 1:
 				regs[1] = b;
