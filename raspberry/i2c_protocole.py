@@ -72,5 +72,5 @@ class I2c_arduino():
         tmp = self.i2c.readList( self.CMDG, 4 )
         time.sleep( 0.020 )
         cha = chr( tmp[0] ) + chr( tmp[1] ) + chr( tmp[2] ) + chr( tmp[3] )
-        struct.unpack( 'f', cha )
+        return struct.unpack( 'f', cha )
 
