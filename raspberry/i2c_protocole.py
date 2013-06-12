@@ -19,9 +19,6 @@ class I2c_arduino():
     def __init__( self ):
         self.i2c = Adafruit_I2C( 0x20 )
 
-    def __list_bytes_to_int__( self, barray ):
-       return sum( barray[i] << ( i * 8 ) for i in range( 4 ) )
-
     def regarde( self, x, y ):
         self.i2c.write8( self.CMDX, x )
         time.sleep( 0.020 )
@@ -57,19 +54,23 @@ class I2c_arduino():
             self.i2c.write8( self.CMDG, self.DCD )
             time.sleep( 0.020 )
             tmpDar = self.i2c.readList( self.CMDG, 4 )
-            print( tmpDar )
-            tmpD = chr( tmpDar[0] ) + chr( tmpDar[1] ) + chr( tmpDar[2] ) + chr( tmpDar[3] )
-            #tmpD = self.__list_bytes_to_int__( tmpDar )
+            if tmpDar != -1:
+                tmpD = chr( tmpDar[0] ) + chr( tmpDar[1] ) + chr( tmpDar[2] ) + chr( tmpDar[3] )
+                resD = struct.unpack( 'I', tmpD )
+            else:
+                resD = -1
             time.sleep( 0.020 )
             #compteur gauche
             self.i2c.write8( self.CMDG, self.DCG )
             time.sleep( 0.020 )
             tmpGar = self.i2c.readList( self.CMDG, 4 )
-            print( tmpGar )
-            tmpG = chr( tmpGar[0] ) + chr( tmpGar[1] ) + chr( tmpGar[2] ) + chr( tmpGar[3] )
-            #tmpG = self.__list_bytes_to_int__( tmpGar )
+            if tmpGar != -1:
+                tmpG = chr( tmpGar[0] ) + chr( tmpGar[1] ) + chr( tmpGar[2] ) + chr( tmpGar[3] )
+                resG = struct.unpack( 'I', tmpG )
+            else:
+                resG = -1
             time.sleep( 0.020 )
-            return struct.unpack( 'I', tmpD ), struct.unpack( 'I', tmpG )
+            return resD, resG
         except ValueError:
             pass
 
