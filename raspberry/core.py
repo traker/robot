@@ -35,3 +35,6 @@ class Core():
         del self.pile_resultat[id]
         return result
 
+    def clear( self ):
+        self.pile.clear()
+        self.pile_resultat.clear()
