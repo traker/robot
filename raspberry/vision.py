@@ -1,9 +1,4 @@
-import pygame.camera as camera
-import pygame.surface as surface
 import cv, ConfigParser, time, cv2
-import pygame.image as pymage
-import pygame.surfarray as surfarray
-import pygame.transform as transform
 import numpy
 from math import *
 
