@@ -70,7 +70,7 @@
 #define DCD			0x09
 #define NIVBATT		0x10
 
-#define UNIT_MS	100
+#define UNIT_MS	200
 //definition des pins
 #define	MOT_G		3	//moteur de propultion gauche
 #define	MOT_D		6	//moteur de propultion droite
