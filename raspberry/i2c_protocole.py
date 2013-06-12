@@ -56,7 +56,7 @@ class I2c_arduino():
             tmpDar = self.i2c.readList( self.CMDG, 4 )
             if tmpDar != -1:
                 tmpD = chr( tmpDar[0] ) + chr( tmpDar[1] ) + chr( tmpDar[2] ) + chr( tmpDar[3] )
-                resD = struct.unpack( 'L', tmpD )
+                resD = struct.unpack( 'l', tmpD )
             else:
                 resD = -1
             time.sleep( 0.020 )
@@ -66,7 +66,7 @@ class I2c_arduino():
             tmpGar = self.i2c.readList( self.CMDG, 4 )
             if tmpGar != -1:
                 tmpG = chr( tmpGar[0] ) + chr( tmpGar[1] ) + chr( tmpGar[2] ) + chr( tmpGar[3] )
-                resG = struct.unpack( 'L', tmpG )
+                resG = struct.unpack( 'l', tmpG )
             else:
                 resG = -1
             time.sleep( 0.020 )
