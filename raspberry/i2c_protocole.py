@@ -48,7 +48,7 @@ class I2c_arduino():
         self.i2c.write8( self.CMDG, self.LASERON )
         time.sleep( 0.020 )
     def raz( self ):
-        self.i2c.write8( CMDG, self.RAZ )
+        self.i2c.write8( self.CMDG, self.RAZ )
         time.sleep( 0.020 )
 
     def get_Compteur( self ):
