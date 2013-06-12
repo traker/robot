@@ -38,43 +38,16 @@ class Vision():
 		self.BETA = config.getfloat( 'Lrf', 'beta' )
 		self.L = config.getfloat( 'Lrf', 'lfocus' )
 
-	def __surface_to_string__( self, surface ):
-		'''
-			Converti une Surface pygame en String
-		@param surface: surface pygame
-		@type surface: pygame.Surface
-		'''
-		return pymage.tostring( surface, 'RGB' )
-
-	def __pygame_to_cvimage__( self, surface ):
-		'''
-			Converti une Surface pygame au format opencv
-		@param surface: surface pygame
-		@type surface: pygame.Surface
-		'''
-		cv_image = cv.CreateImageHeader( surface.get_size(), 8, 3 )
-		image_string = self.__surface_to_string__( surface )
-		cv.SetData( cv_image, image_string )
-		return cv_image
-
-	def __cvimage_to_pygame__( self, image ):
-		'''
-			converti une image opencv en surface pygame 1 canal gris
-		@param image: image opencv
-		@type image: IPLimage
-		@return: gray Surface image pygame
-		@rtype: pygame.Surface
-	 	
-		'''
-		#image_rgb = cv.CreateMat(image.height, image.width, cv.CV_8UC3)
-		#cv.CvtColor(image, image_rgb, cv.CV_BGR2RGB)
-		return pymage.frombuffer( image.tostring(), cv.GetSize( image ), "P" )
 
 	def __capture_im__( self ):
 		'''
 			capture une image et la stocke dans self.image_brut
 		'''
-		f, self.image_brut = self.cam.read()
+		f, source = self.cam.read()
+		bitmap = cv.CreateImageHeader( ( source.shape[1], source.shape[0] ), cv.IPL_DEPTH_8U, 3 )
+		cv.SetData( bitmap, source.tostring(),
+        source.dtype.itemsize * 3 * source.shape[1] )
+		self.image_brut = cv.CloneImage( bitmap )
 
 
 	def __img_filter__( self ):
