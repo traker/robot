@@ -18,7 +18,7 @@ class Robot():
     def __init__( self ):
         self.config = ConfigParser.RawConfigParser()
         self.config.read( 'RobotConf.cfg' )
-        self.bus = I2c_arduino( 0x20 )
+        self.bus = I2c_arduino()
         self.vue = Vision( self.config, self.bus )
         self.land = landmap.LandMap()
         self.pile_vision = core.Core()
