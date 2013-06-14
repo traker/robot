@@ -29,7 +29,7 @@ class Vision():
 		self.image_brut = None #image capture
 		self.vmin = config.getint( 'Camera', 'tresholdmin' ) #valeur minimum treshold
 		self.vmax = config.getint( 'Camera', 'tresholdmax' ) #valeur maximum treshold
-		self.cam = cv2.cv.CaptureFromCam( 0 )
+		self.cam = cv.CaptureFromCAM( 0 )
 		# configuration pour le lrf
 		self.laser = bus.laser
 		self.laser_pos = False
