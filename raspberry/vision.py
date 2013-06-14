@@ -1,4 +1,4 @@
-import cv, ConfigParser, time, cv2
+import ConfigParser, time, cv2, cv
 import numpy
 from math import *
 
@@ -24,11 +24,12 @@ class Vision():
 		self.bitimage = None # image noir et blanc
 		self.matriximg = None
 		self.laplaceim = None
+		self.numpy_array = None
 		self.image_actuel = None
 		self.image_brut = None #image capture
 		self.vmin = config.getint( 'Camera', 'tresholdmin' ) #valeur minimum treshold
 		self.vmax = config.getint( 'Camera', 'tresholdmax' ) #valeur maximum treshold
-		self.cam = cv2.VideoCapture( self.device )
+		self.cam = cv2.cv.CaptureFromCam( 0 )
 		# configuration pour le lrf
 		self.laser = bus.laser
 		self.laser_pos = False
@@ -43,11 +44,12 @@ class Vision():
 		'''
 			capture une image et la stocke dans self.image_brut
 		'''
-		f, source = self.cam.read()
-		bitmap = cv.CreateImageHeader( ( source.shape[1], source.shape[0] ), cv.IPL_DEPTH_8U, 3 )
-		cv.SetData( bitmap, source.tostring(),
-        source.dtype.itemsize * 3 * source.shape[1] )
-		self.image_brut = cv.CloneImage( bitmap )
+		self.image_brut = cv2.cv.QueryFrame( self.cam )
+		#self.cam.read()
+		#bitmap = cv.CreateImageHeader( ( source.shape[1], source.shape[0] ), cv.IPL_DEPTH_8U, 3 )
+		#cv.SetData( bitmap, source.tostring(),
+        #source.dtype.itemsize * 3 * source.shape[1] )
+		#self.image_brut = cv.CloneImage( bitmap )
 
 
 	def __img_filter__( self ):
